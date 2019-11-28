@@ -1,5 +1,11 @@
 package com.suixin.tavern;
 
+import com.suixin.tavern.command.CashCommand;
+import com.suixin.tavern.command.LeaderBoardCommand;
+import com.suixin.tavern.command.RankCommand;
+import com.suixin.tavern.handler.DatabaseHandler;
+import com.suixin.tavern.listener.HandlePlayerPrefix;
+import com.suixin.tavern.handler.Ranks;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;

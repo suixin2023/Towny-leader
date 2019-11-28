@@ -14,7 +14,7 @@ commands:
     usage: /ladder
   cash:
     description: 兑换物品
-    usage: /ladder
+    usage: /cash
 permissions:
   pvptitles.rank:
     description: Allows you to see rank

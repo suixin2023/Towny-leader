@@ -1,5 +1,8 @@
-package com.suixin.tavern;
+package com.suixin.tavern.listener;
 
+import com.suixin.tavern.PvPTitles;
+import com.suixin.tavern.handler.DatabaseHandler;
+import com.suixin.tavern.handler.Ranks;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

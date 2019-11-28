@@ -1,5 +1,6 @@
-package com.suixin.tavern;
+package com.suixin.tavern.command;
 
+import com.suixin.tavern.PvPTitles;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

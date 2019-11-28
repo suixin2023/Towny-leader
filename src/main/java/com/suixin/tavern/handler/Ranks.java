@@ -1,4 +1,6 @@
-package com.suixin.tavern;
+package com.suixin.tavern.handler;
+
+import com.suixin.tavern.PvPTitles;
 
 import java.util.Map;
 

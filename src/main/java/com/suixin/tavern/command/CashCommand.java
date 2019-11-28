@@ -1,5 +1,6 @@
-package com.suixin.tavern;
+package com.suixin.tavern.command;
 
+import com.suixin.tavern.handler.DatabaseHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
