@@ -1,0 +1,24 @@
+name: PvPTitles
+main: com.suixin.tavern.PvPTitles
+version: ${project.version}
+authors:
+- 喵♂呜
+softdepend:
+- Vault
+commands:
+  rank:
+    description: 显示状态
+    usage: /rank
+  ladder:
+    description: 显示前五名玩家
+    usage: /ladder
+  cash:
+    description: 兑换物品
+    usage: /ladder
+permissions:
+  pvptitles.rank:
+    description: Allows you to see rank
+  pvptitles.ladder:
+    description: Allows you to see the ladder
+  pvptitles.fame:
+    description: Allow you to use fame
