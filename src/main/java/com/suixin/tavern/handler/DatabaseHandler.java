@@ -1,6 +1,6 @@
 package com.suixin.tavern.handler;
 
-import com.suixin.tavern.PvPTitles;
+import com.suixin.tavern.Tavern;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class DatabaseHandler {
-    private final PvPTitles pvpTitles;
+    private final Tavern tavern;
     private int Fame;
     private int Points;
     private int defaultPoints;
@@ -21,19 +21,18 @@ public class DatabaseHandler {
     public ChatColor PrefixColor;
 
     private String tag;
-    private String ptag;
 
-    public DatabaseHandler(final PvPTitles pvpTitles) {
+    public DatabaseHandler(final Tavern tavern) {
         this.rankList = new HashMap<>();
         this.reqFame = new HashMap<>();
         this.cashList = new HashMap<>();
-        this.pvpTitles = pvpTitles;
+        this.tavern = tavern;
         this.SaveConfig();
     }
 
     public void FirstRun(final String playername) {
         final File file = new File((new StringBuilder())
-                .append(this.pvpTitles.getDataFolder())
+                .append(this.tavern.getDataFolder())
                 .append(File.separator)
                 .append("players")
                 .append(File.separator)
@@ -42,7 +41,7 @@ public class DatabaseHandler {
                 .toString());
 
         if (!file.exists()) {
-            this.pvpTitles.getDataFolder().mkdirs();
+            this.tavern.getDataFolder().mkdirs();
 
             final FileConfiguration config = new YamlConfiguration();
             config.set("Fame", 0);
@@ -70,16 +69,12 @@ public class DatabaseHandler {
         return Points;
     }
 
-    public String getPtag() {
-        return ptag;
-    }
-
     public String getTag() {
         return this.tag;
     }
 
     public void LoadConfig() {
-        final File file = new File(this.pvpTitles.getDataFolder(), "config.yml");
+        final File file = new File(this.tavern.getDataFolder(), "config.yml");
         final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         final List<String> configList = config.getStringList("RankNames");
         defaultPoints = config.getInt("defaultPoints", 50);
@@ -98,21 +93,21 @@ public class DatabaseHandler {
                 final Integer num = Integer.valueOf(key);
                 cashList.put(num, cash.getString(key));
             } catch (final Exception e) {
-                pvpTitles.getLogger().warning(key + "不是一个数字 已忽略!");
+                tavern.getLogger().warning(key + "不是一个数字 已忽略!");
             }
         }
         tag = config.getString("Tag");
         if (configList.size() != derp.size()) {
-            this.pvpTitles.log.info("WARNING - RankNames and ReqFame are not equal in their numbers.");
-            this.pvpTitles.log.info("WARNING - RankNames and ReqFame are not equal in their numbers.");
-            this.pvpTitles.log.info("WARNING - RankNames and ReqFame are not equal in their numbers.");
+            this.tavern.log.info("WARNING - RankNames and ReqFame are not equal in their numbers.");
+            this.tavern.log.info("WARNING - RankNames and ReqFame are not equal in their numbers.");
+            this.tavern.log.info("WARNING - RankNames and ReqFame are not equal in their numbers.");
         }
     }
-
+    //读取玩家的数据
     public void LoadPlayerData(final String playername) {
         final File file = new File((new StringBuilder())
-                .append(this.pvpTitles.getDataFolder())
-                .append(File.separator)
+                .append(this.tavern.getDataFolder())//返回存放插件文件数据的文件夹.
+                .append(File.separator)//反斜杆
                 .append("players")
                 .append(File.separator)
                 .append(playername)
@@ -132,10 +127,10 @@ public class DatabaseHandler {
     }
 
     public void SaveConfig() {
-        final File file = new File(this.pvpTitles.getDataFolder(), "config.yml");
+        final File file = new File(this.tavern.getDataFolder(), "config.yml");
 
         if (!file.exists()) {
-            this.pvpTitles.getDataFolder().mkdirs();
+            this.tavern.getDataFolder().mkdirs();
             final FileConfiguration config = new YamlConfiguration();
             final String[] ranks = { "None",
                                      "Hero",
@@ -172,7 +167,7 @@ public class DatabaseHandler {
 
     public void SavePlayerData(final String playername, final String path, final int fame) {
         final File file = new File((new StringBuilder())
-                .append(this.pvpTitles.getDataFolder())
+                .append(this.tavern.getDataFolder())
                 .append(File.separator)
                 .append("players")
                 .append(File.separator)
@@ -180,7 +175,7 @@ public class DatabaseHandler {
                 .append(".yml")
                 .toString());
         if (!file.exists()) {
-            this.pvpTitles.getDataFolder().mkdir();
+            this.tavern.getDataFolder().mkdir();
             try {
                 file.createNewFile();
             } catch (final Exception e) {

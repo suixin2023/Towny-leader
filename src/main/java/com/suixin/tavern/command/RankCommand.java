@@ -34,7 +34,7 @@ public class RankCommand implements CommandExecutor {
 
 	private void HandleRankCmd(final Player player) {
 		this.databaseHandler.LoadPlayerData(player.getName());
-		this.databaseHandler.LoadConfig();
+//		this.databaseHandler.LoadConfig();
 		final int fame = this.databaseHandler.getFame();
 		final String rank = this.ranks.GetRank(fame);
 		final int rankup = this.ranks.FameToRankUp();

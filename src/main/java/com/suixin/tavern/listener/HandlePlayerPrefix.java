@@ -1,6 +1,6 @@
 package com.suixin.tavern.listener;
 
-import com.suixin.tavern.PvPTitles;
+import com.suixin.tavern.Tavern;
 import com.suixin.tavern.handler.DatabaseHandler;
 import com.suixin.tavern.handler.Ranks;
 import org.bukkit.ChatColor;
@@ -19,14 +19,14 @@ public class HandlePlayerPrefix implements Listener {
     private final DatabaseHandler databaseHandler;
     private final Ranks ranks;
     @SuppressWarnings("unused")
-    private final PvPTitles pvpTitles;
+    private final Tavern tavern;
 
     Map<String, Integer> map = new HashMap<String, Integer>();
 
-    public HandlePlayerPrefix(final DatabaseHandler databaseHandler, final Ranks ranks, final PvPTitles pvpTitles) {
+    public HandlePlayerPrefix(final DatabaseHandler databaseHandler, final Ranks ranks, final Tavern tavern) {
         this.databaseHandler = databaseHandler;
         this.ranks = ranks;
-        this.pvpTitles = pvpTitles;
+        this.tavern = tavern;
     }
 
     @EventHandler

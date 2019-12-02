@@ -1,6 +1,6 @@
 package com.suixin.tavern.command;
 
-import com.suixin.tavern.PvPTitles;
+import com.suixin.tavern.Tavern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,11 +15,11 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class LeaderBoardCommand implements CommandExecutor {
-	private final PvPTitles pvpTitles;
+	private final Tavern tavern;
 	private final TreeMap<Integer, String> RankedPlayers;
 
-	public LeaderBoardCommand(final PvPTitles pvpTitles) {
-		this.pvpTitles = pvpTitles;
+	public LeaderBoardCommand(final Tavern tavern) {
+		this.tavern = tavern;
 		this.RankedPlayers = new TreeMap<Integer, String>();
 	}
 
@@ -59,11 +59,11 @@ public class LeaderBoardCommand implements CommandExecutor {
 	}
 
 	private void SetTopTenPlayers(final Player player) {
-		final File file = new File((new StringBuilder()).append(this.pvpTitles.getDataFolder()).append(File.separator).append("players").toString());
+		final File file = new File((new StringBuilder()).append(this.tavern.getDataFolder()).append(File.separator).append("players").toString());
 		final File[] allFiles = file.listFiles();
 		for (final File item : allFiles) {
 			final File ladderFile = new File((new StringBuilder())
-					.append(this.pvpTitles.getDataFolder())
+					.append(this.tavern.getDataFolder())
 					.append(File.separator)
 					.append("players")
 					.append(File.separator)

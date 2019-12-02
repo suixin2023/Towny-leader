@@ -1,5 +1,5 @@
-name: PvPTitles
-main: com.suixin.tavern.PvPTitles
+name: Tavern
+main: com.suixin.tavern.Tavern
 version: ${project.version}
 authors:
 - 喵♂呜
@@ -15,10 +15,13 @@ commands:
   cash:
     description: 兑换物品
     usage: /cash
+  tave:
+    description: 打开GUI
+    usage: /tave
 permissions:
-  pvptitles.rank:
+  tavern.rank:
     description: Allows you to see rank
-  pvptitles.ladder:
+  tavern.ladder:
     description: Allows you to see the ladder
-  pvptitles.fame:
+  tavern.fame:
     description: Allow you to use fame

@@ -1,6 +1,6 @@
 package com.suixin.tavern.handler;
 
-import com.suixin.tavern.PvPTitles;
+import com.suixin.tavern.Tavern;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ public class Ranks {
 	private final Map<Integer, String> rankList;
 	private Map<Integer, Integer> reqFame;
 
-	public Ranks(final DatabaseHandler databaseHandler, final PvPTitles pvpTitles) {
+	public Ranks(final DatabaseHandler databaseHandler, final Tavern tavern) {
 		this.databaseHandler = databaseHandler;
 		this.databaseHandler.LoadConfig();
 		this.rankList = this.databaseHandler.RankList();
