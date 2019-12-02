@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 public class Tavern extends JavaPlugin {
 	public Logger log;
 	private RankCommand rankCommand;
-	private GuiCommand guiCommand;
 	private BetCommand betCommand;
 	private DatabaseHandler databaseHandler;
 	private BetDataHandler betDataHandler;
@@ -28,7 +27,6 @@ public class Tavern extends JavaPlugin {
 		this.betDataHandler = new BetDataHandler(this);
 		this.ranks = new Ranks(this.databaseHandler, this);
 		this.rankCommand = new RankCommand(this.databaseHandler, this.ranks);
-		this.guiCommand = new GuiCommand();
 		this.betCommand = new BetCommand(this.betDataHandler);
 		this.handlePlayerPrefix = new HandlePlayerPrefix(this.databaseHandler, this.ranks, this);
 		this.ladder = new LeaderBoardCommand(this);
@@ -37,7 +35,6 @@ public class Tavern extends JavaPlugin {
 		getCommand("rank").setExecutor(this.rankCommand);
 		getCommand("ladder").setExecutor(this.ladder);
 		getCommand("cash").setExecutor(this.cash);
-		getCommand("tnopen").setExecutor(this.guiCommand);
-		getCommand("tnbet").setExecutor(this.betCommand);
+		getCommand("tn").setExecutor(this.betCommand);
 	}
 }
