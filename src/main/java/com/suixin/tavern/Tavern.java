@@ -1,9 +1,7 @@
 package com.suixin.tavern;
 
-import com.suixin.tavern.command.CashCommand;
-import com.suixin.tavern.command.GuiCommand;
-import com.suixin.tavern.command.LeaderBoardCommand;
-import com.suixin.tavern.command.RankCommand;
+import com.suixin.tavern.command.*;
+import com.suixin.tavern.handler.BetDataHandler;
 import com.suixin.tavern.handler.DatabaseHandler;
 import com.suixin.tavern.listener.HandlePlayerPrefix;
 import com.suixin.tavern.handler.Ranks;
@@ -15,7 +13,9 @@ public class Tavern extends JavaPlugin {
 	public Logger log;
 	private RankCommand rankCommand;
 	private GuiCommand guiCommand;
+	private BetCommand betCommand;
 	private DatabaseHandler databaseHandler;
+	private BetDataHandler betDataHandler;
 	private Ranks ranks;
 	private HandlePlayerPrefix handlePlayerPrefix;
 	private LeaderBoardCommand ladder;
@@ -25,9 +25,11 @@ public class Tavern extends JavaPlugin {
 	public void onEnable() {
 		this.log = getLogger();
 		this.databaseHandler = new DatabaseHandler(this);
+		this.betDataHandler = new BetDataHandler(this);
 		this.ranks = new Ranks(this.databaseHandler, this);
 		this.rankCommand = new RankCommand(this.databaseHandler, this.ranks);
 		this.guiCommand = new GuiCommand();
+		this.betCommand = new BetCommand(this.betDataHandler);
 		this.handlePlayerPrefix = new HandlePlayerPrefix(this.databaseHandler, this.ranks, this);
 		this.ladder = new LeaderBoardCommand(this);
 		this.cash = new CashCommand(databaseHandler);
@@ -35,6 +37,7 @@ public class Tavern extends JavaPlugin {
 		getCommand("rank").setExecutor(this.rankCommand);
 		getCommand("ladder").setExecutor(this.ladder);
 		getCommand("cash").setExecutor(this.cash);
-		getCommand("tave").setExecutor(this.guiCommand);
+		getCommand("tnopen").setExecutor(this.guiCommand);
+		getCommand("tnbet").setExecutor(this.betCommand);
 	}
 }

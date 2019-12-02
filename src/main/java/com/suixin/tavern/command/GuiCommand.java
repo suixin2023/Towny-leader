@@ -24,7 +24,7 @@ public class GuiCommand implements CommandExecutor {
 			sender.sendMessage("You must be a player!");
 			return false;
 		}
-		if (cmd.getName().equalsIgnoreCase("tave")) {
+		if (cmd.getName().equalsIgnoreCase("tnopen")) {
 			player.closeInventory();
 			player.openInventory(inv2);
 			sender.sendMessage("§2§l请输入下注金额");

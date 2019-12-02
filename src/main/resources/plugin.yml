@@ -15,9 +15,12 @@ commands:
   cash:
     description: 兑换物品
     usage: /cash
-  tave:
+  tnopen:
     description: 打开GUI
-    usage: /tave
+    usage: /tnopen
+  tnbet:
+    description: 下注
+    usage: /tnbet
 permissions:
   tavern.rank:
     description: Allows you to see rank
