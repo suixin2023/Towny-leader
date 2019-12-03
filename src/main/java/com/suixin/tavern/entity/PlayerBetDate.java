@@ -1,9 +1,18 @@
 package com.suixin.tavern.entity;
 
 public class PlayerBetDate {
-    private String playerName;
-    private String betType;
-    private Integer betAmount;
+    private String playerName;//玩家名字
+    private String gameType;//玩法类型
+    private String betType;//押注类型
+    private Integer betAmount;//押注金额
+
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
 
     public String getPlayerName() {
         return playerName;

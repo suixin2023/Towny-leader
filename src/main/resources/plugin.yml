@@ -6,6 +6,15 @@ authors:
 softdepend:
 - Vault
 commands:
+  rank:
+    description: 显示状态
+    usage: /rank
+  ladder:
+    description: 显示前五名玩家
+    usage: /ladder
+  cash:
+    description: 兑换物品
+    usage: /cash
   tn:
     description:
     usage: /tn

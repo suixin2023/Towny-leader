@@ -1,5 +1,6 @@
 package com.suixin.tavern.command;
 
+import com.suixin.tavern.Tavern;
 import com.suixin.tavern.entity.PlayerBetDate;
 import com.suixin.tavern.handler.BetDataHandler;
 import org.bukkit.ChatColor;
@@ -13,11 +14,15 @@ import java.util.List;
 
 public class BetCommand implements CommandExecutor {
 	private final BetDataHandler betDataHandler;
+	private final Tavern Tavern;
+	private List<PlayerBetDate> currentCckBetList;
+	private List<PlayerBetDate> currentDbBetList;
 	String[] strs = {"大","小","单","双","豹子"};
 	private final List<String> betList = Arrays.asList(strs);
 
-	public BetCommand(final BetDataHandler databaseHandler) {
+	public BetCommand(final BetDataHandler databaseHandler, Tavern Tavern) {
 		this.betDataHandler = databaseHandler;
+		this.Tavern = Tavern;
 	}
 
 	@Override
@@ -30,13 +35,15 @@ public class BetCommand implements CommandExecutor {
 		}
 		if (cmd.getName().equalsIgnoreCase("tn")) {
 			if (args.length == 0) {
-				player.sendMessage(ChatColor.GREEN + "/tn caicaikan <类型> <金额> ：猜猜看押注");
-				player.sendMessage(ChatColor.GREEN + "/tn duobao <类型> <金额> ：点卷夺宝押注!");
-				player.sendMessage(ChatColor.GREEN + "/tn time <类型> ：查看本期开奖时间!");
+				player.sendMessage(ChatColor.GREEN + "/tn cck <大|小|单|双|豹子> <金额> ：猜猜看押注");
+				player.sendMessage(ChatColor.GREEN + "/tn db <大|小|龙> <金额> ：点卷夺宝押注!");
+				player.sendMessage(ChatColor.GREEN + "/tn time <cck|db> ：查看本期开奖时间!");
+				player.sendMessage(ChatColor.GREEN + "/tn rule <cck|db> ：了解游戏规则!");
+				return true;
 			}
 			List<String> argsList = Arrays.asList(args);
 			String arg1 = argsList.get(0);
-			if (arg1.equals("caicaikan")) {
+			if (arg1.equals("cck")) {
 				//进行【猜猜看】金额押注
 				try {
 					return caicaikanBet (player, argsList);
@@ -46,19 +53,38 @@ public class BetCommand implements CommandExecutor {
 			}else if (arg1.equals("open")){
 				//打开GUI
 				//TODO
+			}else if (arg1.equals("rule")){
+				//了解游戏规则
+				if (argsList.size() == 1) {
+					player.sendMessage(ChatColor.RED + "参数缺失：/tn rule <cck|db>");
+				}else if (argsList.size() > 2) {
+					player.sendMessage(ChatColor.RED + "参数个数不正确：/tn rule <cck|db>");
+				}else if (argsList.get(1).equals("cck")){
+					player.sendMessage(ChatColor.BLUE + "【猜猜看】游戏规则：");
+					player.sendMessage(ChatColor.BLUE + "大小单双，赔率两倍，豹子赔率十倍");
+					player.sendMessage(ChatColor.BLUE + "最低押注10金币");
+					player.sendMessage(ChatColor.BLUE + "每局五分钟，押注结果请查看邮箱");
+					return true;
+				}else if (argsList.get(1).equals("db")){
+					player.sendMessage(ChatColor.BLUE + "【点券夺宝】游戏规则：");
+					player.sendMessage(ChatColor.BLUE + "大小，赔率两倍，龙赔率十倍");
+					player.sendMessage(ChatColor.BLUE + "最低押注100点券");
+					player.sendMessage(ChatColor.BLUE + "每局十分钟，押注结果请查看邮箱");
+					return true;
+				}
 			}else if (arg1.equals("time")){
 				//查看本期开奖剩余时间
 				//TODO
 				if (argsList.size() == 1) {
-					player.sendMessage(ChatColor.RED + "参数缺失：/tn time <类型>");
+					player.sendMessage(ChatColor.RED + "参数缺失：/tn time <cck|db>");
 				}else if (argsList.size() > 2) {
-					player.sendMessage(ChatColor.RED + "参数个数不正确：/tn time <类型>");
-				}else if (argsList.get(1).equals("caicaikan")){
+					player.sendMessage(ChatColor.RED + "参数个数不正确：/tn time <cck|db>");
+				}else if (argsList.get(1).equals("cck")){
 					//查询本期猜猜看的开奖时间
 					String time = selectCaicaikanTime();
 					player.sendMessage(ChatColor.YELLOW + "距离本期【猜猜看】开奖还有"+time);
 					return true;
-				}else if (argsList.get(1).equals("duobao")){
+				}else if (argsList.get(1).equals("db")){
 					//查询本期猜猜看的开奖时间
 					String time = selectDuobaoTime();
 					player.sendMessage(ChatColor.YELLOW + "距离本期【点卷夺宝】开奖还有"+time);
@@ -91,12 +117,12 @@ public class BetCommand implements CommandExecutor {
 		PlayerBetDate playerBetDate = new PlayerBetDate();
 		playerBetDate.setPlayerName(player.getDisplayName());
 		playerBetDate.setBetAmount(amount);
+		playerBetDate.setGameType("【猜猜看】");
 		playerBetDate.setBetType(betType);
-		List<PlayerBetDate> currentBetList = betDataHandler.getCurrentBetList();
-		currentBetList.add(playerBetDate);
+		currentCckBetList.add(playerBetDate);
 		player.sendMessage("§a§l押注成功！！！");
-		player.sendMessage("§a§l输入：/tn time caicaikan 查询开奖时间！");
-		return null;
+		player.sendMessage("§a§l输入：/tn time cck 查询开奖时间！");
+		return true;
 	}
 
 	private String selectCaicaikanTime () {
@@ -107,5 +133,21 @@ public class BetCommand implements CommandExecutor {
 	private String selectDuobaoTime () {
 		String time = "5分12秒";//todo
 		return time;
+	}
+
+	public List<PlayerBetDate> getCurrentCckBetList() {
+		return currentCckBetList;
+	}
+
+	public void setCurrentCckBetList(List<PlayerBetDate> currentCckBetList) {
+		this.currentCckBetList = currentCckBetList;
+	}
+
+	public List<PlayerBetDate> getCurrentDbBetList() {
+		return currentDbBetList;
+	}
+
+	public void setCurrentDbBetList(List<PlayerBetDate> currentDbBetList) {
+		this.currentDbBetList = currentDbBetList;
 	}
 }
