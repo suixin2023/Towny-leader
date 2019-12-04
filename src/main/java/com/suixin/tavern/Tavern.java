@@ -6,12 +6,14 @@ import com.suixin.tavern.handler.BetDataHandler;
 import com.suixin.tavern.handler.DatabaseHandler;
 import com.suixin.tavern.listener.HandlePlayerPrefix;
 import com.suixin.tavern.handler.Ranks;
+import com.suixin.tavern.util.VaultAPI;
+import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Tavern extends JavaPlugin {
@@ -24,11 +26,15 @@ public class Tavern extends JavaPlugin {
 	private HandlePlayerPrefix handlePlayerPrefix;
 	private LeaderBoardCommand ladder;
 	private CashCommand cash;
-	private Date date;
+	private Long timeMillis;//cck本期开奖日期
+	private TreeMap<Double, String> topPlayers;//cck本期获奖名单
+	private TitleManagerAPI api;
 
 	@Override
 	public void onEnable() {
 		this.log = getLogger();
+		api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
+		this.topPlayers = new TreeMap<>();
 		this.databaseHandler = new DatabaseHandler(this);
 		this.betDataHandler = new BetDataHandler(this);
 		this.ranks = new Ranks(this.databaseHandler, this);
@@ -51,7 +57,7 @@ public class Tavern extends JavaPlugin {
 			@Override
 			public void run() {
 				//刷新开奖时间
-				date = new Date();
+				long timeMillis = System.currentTimeMillis() + 30000l;
 				//开奖
 				int res = (new Random()).nextInt(6);
 				int res2 = (new Random()).nextInt(6);
@@ -102,19 +108,58 @@ public class Tavern extends JavaPlugin {
 		//获取押注的玩家数据
 		List<PlayerBetDate> currentCckBetList = betCommand.getCurrentCckBetList();
 		for (PlayerBetDate playerBetDate : currentCckBetList) {
-			Integer betAmountRes = new Integer(0);
+			Integer betAmount = playerBetDate.getBetAmount();
+			Double betAmountRes = 0.00;
 			String betType = playerBetDate.getBetType();
-			if (!betType.equals("豹子") && betType.equals(historyLotteryResults.getResult())) {
-				Integer betAmount = playerBetDate.getBetAmount();
-				betAmountRes = betAmount*2;
-			}else if (betType.equals("豹子") && betType.equals(historyLotteryResults.getResult())){
-				Integer betAmount = playerBetDate.getBetAmount();
-				betAmountRes = betAmount*10;
+			if (!betType.equals("豹子") && (historyLotteryResults.getResult()).contains(betType)) {
+				betAmountRes = betAmount + (betAmount * 0.95);
+			}else if (betType.equals("豹子") && (historyLotteryResults.getResult()).contains(betType)){
+				betAmountRes = betAmount + (betAmount * 9.5);
 			}
 			//发放奖励
-
+			String playerName = playerBetDate.getPlayerName();
+//			Player player = Bukkit.getServer().getPlayer(playerName);
+//			UUID uniqueId = player.getUniqueId();//金币插件暂时不支持UUID
+			VaultAPI.giveMoney(playerName,betAmountRes);
 		}
 		//通报前三名
-		return null;
+		NavigableMap<Double, String> sortedMap = this.topPlayers.descendingMap();
+		List<Map.Entry<Double, String>> list = new ArrayList<>();
+		int number = 0;
+		for (final Map.Entry<Double, String> entry : sortedMap.entrySet()) {
+			if (number != 3) {
+				list.add(entry);
+			} else {
+				break;
+			}
+			number++;
+		}
+
+		//发送title消息
+		Collection<? extends Player> onlinePlayers = Bukkit.getServer().getOnlinePlayers();
+		Iterator<? extends Player> iterator = onlinePlayers.iterator();
+		while(iterator.hasNext()) {
+			Player player = iterator.next();
+			String value ="§6§l";
+			for (Map.Entry<Double, String> entry : list) {
+				value = value +"【"+entry.getValue()+"】"+" ";
+			}
+			api.sendSubtitle(player,value);
+			api.sendTitle(player,"§a恭喜以下玩家在§6【猜猜看】§a中获得前三甲！");
+			api.sendActionbar(player,"§a第§6"+historyLotteryResults.getPeriods()+"§a期猜猜看结果：§6"+historyLotteryResults.getResult());
+		}
+
+		sortedMap.clear();
+		this.topPlayers.clear();
+		return true;
+	}
+
+
+	public Long getTimeMillis() {
+		return timeMillis;
+	}
+
+	public void setTimeMillis(Long timeMillis) {
+		this.timeMillis = timeMillis;
 	}
 }

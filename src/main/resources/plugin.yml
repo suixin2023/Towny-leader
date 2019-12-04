@@ -5,6 +5,8 @@ authors:
 - suixin
 softdepend:
 - Vault
+- PlayerPoints
+- TitleManager
 commands:
   rank:
     description: 显示状态

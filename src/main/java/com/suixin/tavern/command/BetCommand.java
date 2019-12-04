@@ -126,7 +126,12 @@ public class BetCommand implements CommandExecutor {
 	}
 
 	private String selectCaicaikanTime () {
-		String time = "5分12秒";//todo
+		long millis = System.currentTimeMillis();
+		long betTime = Tavern.getTimeMillis();
+		long l = betTime - millis;
+		long mu = l / 60;
+		long mi = (l % 60)/1000;
+		String time = mu+"分"+mi+"秒";//todo
 		return time;
 	}
 
