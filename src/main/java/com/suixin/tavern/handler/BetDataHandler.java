@@ -16,6 +16,7 @@ public class BetDataHandler {
 
     public BetDataHandler(final Tavern tavern) {
         this.tavern = tavern;
+        this.historyLotteryResults = new HistoryLotteryResults();
     }
     public BetDataHandler() {
 
@@ -60,6 +61,9 @@ public class BetDataHandler {
                 .append(".yml")
                 .toString());
         final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        if (config == null) {
+            return;
+        }
         this.historyLotteryResults.setGameType(config.getString("玩法类型"));
         this.historyLotteryResults.setPeriods(config.getString("开奖期数"));
         this.historyLotteryResults.setResult(config.getString("开奖结果"));

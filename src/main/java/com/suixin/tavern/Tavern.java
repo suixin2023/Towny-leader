@@ -67,7 +67,11 @@ public class Tavern extends JavaPlugin {
 				//查询上期猜猜看开奖记录
 				betDataHandler.LoadCckBetData(historyLotteryResults);
 				HistoryLotteryResults lotteryResults = betDataHandler.getHistoryLotteryResults();
-				Integer periods = Integer.valueOf(lotteryResults.getPeriods());
+				String periods1 = lotteryResults.getPeriods();
+				Integer periods = 0;
+				if (periods1 != null) {
+					periods = Integer.valueOf(periods1);
+				}
 				historyLotteryResults.setPeriods(periods+1+"");
 				if (res == res2 && res2 == res3) {
 					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"豹子");
