@@ -98,7 +98,7 @@ public class BetCommand implements CommandExecutor {
 	private Boolean caicaikanBet (Player player, List<String> argsList){
 		if (argsList.size() != 3) {
 			player.sendMessage(ChatColor.RED + "参数不正确!");
-			player.sendMessage(ChatColor.RED + "指令提示: tn bet <类型> <金额>");
+			player.sendMessage(ChatColor.RED + "指令提示: tn cck <类型> <金额>");
 		}
 		String betType = argsList.get(1);
 		if (!betList.contains(betType)) {
@@ -115,9 +115,9 @@ public class BetCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "押注金额必须大于10");
 		}
 		PlayerBetDate playerBetDate = new PlayerBetDate();
-		playerBetDate.setPlayerName(player.getDisplayName());
+		playerBetDate.setPlayerName(player.getName());
 		playerBetDate.setBetAmount(amount);
-		playerBetDate.setGameType("【猜猜看】");
+		playerBetDate.setGameType("猜猜看");
 		playerBetDate.setBetType(betType);
 		currentCckBetList.add(playerBetDate);
 		player.sendMessage("§a§l押注成功！！！");
