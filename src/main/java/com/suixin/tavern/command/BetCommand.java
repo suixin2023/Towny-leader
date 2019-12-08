@@ -117,10 +117,12 @@ public class BetCommand implements CommandExecutor {
 		if (argsList.size() != 3) {
 			player.sendMessage(ChatColor.RED + "参数不正确!");
 			player.sendMessage(ChatColor.RED + "指令提示: tn cck <类型> <金额>");
+			return true;
 		}
 		String betType = argsList.get(1);
 		if (!betList.contains(betType)) {
 			player.sendMessage(ChatColor.RED + "押注类型必须是（大,小,单,双,豹子）中的一个");
+			return true;
 		}
 		String amountStr = argsList.get(2);
 		Integer amount = 0;
@@ -128,9 +130,11 @@ public class BetCommand implements CommandExecutor {
 			amount = Integer.valueOf(amountStr);
 		}catch (Exception e){
 			player.sendMessage(ChatColor.RED + "押注金额必须是整数");
+			return true;
 		}
 		if (amount < 10) {
 			player.sendMessage(ChatColor.RED + "押注金额必须大于10");
+			return true;
 		}
 		PlayerBetDate playerBetDate = new PlayerBetDate();
 		playerBetDate.setPlayerName(player.getName());

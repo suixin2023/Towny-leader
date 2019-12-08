@@ -126,8 +126,9 @@ public class Tavern extends JavaPlugin {
 			String playerName = playerBetDate.getPlayerName();
 			Player player = Bukkit.getServer().getPlayer(playerName);
 //			UUID uniqueId = player.getUniqueId();//金币插件暂时不支持UUID
-//			VaultAPI.giveMoney(playerName,betAmountRes);
 			if (betAmountRes > 0.00) {
+				topPlayers.put(betAmountRes,playerName);
+				VaultAPI.giveMoney(playerName,betAmountRes);
 				player.sendMessage("§a恭喜您押注的"+"[§6"+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"金"+"§6]"+"§a在本期【猜猜看】中获得："+betAmountRes+"金");
 			}else {
 				player.sendMessage("§b很遗憾...您押注的"+"[§6"+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"金"+"§6]"+"§b在本期【猜猜看】中没有中奖");
@@ -149,16 +150,23 @@ public class Tavern extends JavaPlugin {
 		//发送title消息
 		Collection<? extends Player> onlinePlayers = Bukkit.getServer().getOnlinePlayers();
 		Iterator<? extends Player> iterator = onlinePlayers.iterator();
-		while(iterator.hasNext()) {
-			Player player = iterator.next();
-			String value ="§6§l【唱】【跳】【RAP】";
-			for (Map.Entry<Double, String> entry : list) {
-				value = value +"【"+entry.getValue()+"】"+" ";
+		if (list.size() > 0) {
+			while(iterator.hasNext()) {
+				Player player = iterator.next();
+				String value ="§6§l";
+				for (Map.Entry<Double, String> entry : list) {
+					value = value +"【"+entry.getValue()+"】"+" ";
+				}
+				player.sendMessage("§a第§6"+historyLotteryResults.getPeriods()+"§a期【猜猜看】结果：§6"+historyLotteryResults.getResult());
+				api.sendSubtitle(player,value,100,100,100);
+				api.sendTitle(player,"§a恭喜以下玩家在§6【猜猜看】§a中获得前三甲！",100,100,100);
+				api.sendActionbar(player,"§a第§6"+historyLotteryResults.getPeriods()+"§a期猜猜看结果：§6"+historyLotteryResults.getResult());
 			}
-			player.sendMessage("§a第§6"+historyLotteryResults.getPeriods()+"§a期【猜猜看】结果：§6"+historyLotteryResults.getResult());
-			api.sendSubtitle(player,value,100,100,100);
-			api.sendTitle(player,"§a恭喜以下玩家在§6【猜猜看】§a中获得前三甲！",100,100,100);
-			api.sendActionbar(player,"§a第§6"+historyLotteryResults.getPeriods()+"§a期猜猜看结果：§6"+historyLotteryResults.getResult());
+		}else {
+			while(iterator.hasNext()) {
+				Player player = iterator.next();
+				player.sendMessage("§a第§6"+historyLotteryResults.getPeriods()+"§a期【猜猜看】结果：§6"+historyLotteryResults.getResult());
+			}
 		}
 
 		sortedMap.clear();
