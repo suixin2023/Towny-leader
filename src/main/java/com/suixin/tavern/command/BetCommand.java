@@ -36,6 +36,7 @@ public class BetCommand implements CommandExecutor {
 			player = (Player) sender;
 		}else {
 			sender.sendMessage("错误，这是一个玩家指令!");
+			return true;
 		}
 		if (cmd.getName().equalsIgnoreCase("tn")) {
 			if (args.length == 0) {
