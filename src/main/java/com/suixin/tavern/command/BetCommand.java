@@ -143,15 +143,22 @@ public class BetCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "你没有足够的金币！");
 			return true;
 		}
-		PlayerBetDate playerBetDate = new PlayerBetDate();
-		playerBetDate.setPlayerName(player.getName());
-		playerBetDate.setBetAmount(amount);
-		playerBetDate.setGameType("猜猜看");
-		playerBetDate.setBetType(betType);
-		currentCckBetList.add(playerBetDate);
-		player.sendMessage("§a§l押注成功！！！");
-		player.sendMessage("§a§l输入：/tn time cck 查询开奖时间！");
-		return true;
+        String time = selectCaicaikanTime();
+		if (time == null) {
+            player.sendMessage(ChatColor.RED + "奖励发放中！请稍后再押注");
+            return true;
+        }
+        //扣除金币
+        VaultAPI.removeMoney(player.getName(),amount);
+        PlayerBetDate playerBetDate = new PlayerBetDate();
+        playerBetDate.setPlayerName(player.getName());
+        playerBetDate.setBetAmount(amount);
+        playerBetDate.setGameType("猜猜看");
+        playerBetDate.setBetType(betType);
+        currentCckBetList.add(playerBetDate);
+        player.sendMessage("§a§l押注成功！！！");
+        player.sendMessage("§a§l输入：/tn time cck 查询开奖时间！");
+        return true;
 	}
 
 	private String selectCaicaikanTime () {
