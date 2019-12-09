@@ -129,9 +129,9 @@ public class Tavern extends JavaPlugin {
 			if (betAmountRes > 0.00) {
 				winner.add(playerBetDate);
 				VaultAPI.giveMoney(playerName,betAmountRes);
-				player.sendMessage("§a恭喜您押注的"+"[§6"+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"金"+"§6]"+"§a在本期【猜猜看】中获得："+betAmountRes+"金");
+				player.sendMessage("§a恭喜您押注的"+"§6["+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"金"+"§6]"+"§a在本期【猜猜看】中获得："+betAmountRes+"金");
 			}else {
-				player.sendMessage("§b很遗憾...您押注的"+"[§6"+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"金"+"§6]"+"§b在本期【猜猜看】中没有中奖");
+				player.sendMessage("§b很遗憾...您押注的"+"§6["+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"金"+"§6]"+"§b在本期【猜猜看】中没有中奖");
 			}
 		}
 		//排序
@@ -145,10 +145,14 @@ public class Tavern extends JavaPlugin {
 			}
 		}
 		//取前三
-		List<PlayerBetDate> list = new ArrayList<>();
-		list.add(winner.get(0));
-		list.add(winner.get(1));
-		list.add(winner.get(2));
+        List<PlayerBetDate> list = new ArrayList<>();
+        if (winner.size() > 0 && winner.size() > 3) {
+            list.add(winner.get(0));
+            list.add(winner.get(1));
+            list.add(winner.get(2));
+        }else {
+            list.addAll(winner);
+        }
 		//通报前三名
 		//发送title消息
 		Collection<? extends Player> onlinePlayers = Bukkit.getServer().getOnlinePlayers();
