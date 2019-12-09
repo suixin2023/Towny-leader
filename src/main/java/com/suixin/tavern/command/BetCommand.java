@@ -3,6 +3,7 @@ package com.suixin.tavern.command;
 import com.suixin.tavern.Tavern;
 import com.suixin.tavern.entity.PlayerBetDate;
 import com.suixin.tavern.handler.BetDataHandler;
+import com.suixin.tavern.util.VaultAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -134,6 +135,12 @@ public class BetCommand implements CommandExecutor {
 		}
 		if (amount < 10) {
 			player.sendMessage(ChatColor.RED + "押注金额必须大于10");
+			return true;
+		}
+		//判断是否有足够的金钱
+		double money = VaultAPI.getMoney(player.getName());
+		if (money < amount) {
+			player.sendMessage(ChatColor.RED + "你没有足够的金币！");
 			return true;
 		}
 		PlayerBetDate playerBetDate = new PlayerBetDate();
