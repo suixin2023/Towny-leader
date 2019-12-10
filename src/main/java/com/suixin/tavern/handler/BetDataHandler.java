@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class BetDataHandler {
@@ -17,11 +18,12 @@ public class BetDataHandler {
     public BetDataHandler(final Tavern tavern) {
         this.tavern = tavern;
         this.historyLotteryResults = new HistoryLotteryResults();
+        this.SaveDbConfig();
     }
     public BetDataHandler() {
 
     }
-    //保存本期【猜猜看】开奖信息
+    //保存本期开奖信息
     public void SaveCckBetDate(HistoryLotteryResults historyLotteryResults) {
         final File file = new File((new StringBuilder())
                 .append(this.tavern.getDataFolder())
@@ -50,7 +52,7 @@ public class BetDataHandler {
         }
     }
 
-    //读取玩家的数据
+    //读取开奖数据
     public void LoadCckBetData(HistoryLotteryResults historyLotteryResults) {
         final File file = new File((new StringBuilder())
                 .append(this.tavern.getDataFolder())//返回存放插件文件数据的文件夹.
@@ -67,6 +69,35 @@ public class BetDataHandler {
         this.historyLotteryResults.setGameType(config.getString("玩法类型"));
         this.historyLotteryResults.setPeriods(config.getString("开奖期数"));
         this.historyLotteryResults.setResult(config.getString("开奖结果"));
+    }
+
+    //读取数据库配置数据
+    public FileConfiguration LoadPlayerData( ) {
+        final File file = new File((new StringBuilder())
+                .append(this.tavern.getDataFolder())//返回存放插件文件数据的文件夹.
+                .append(File.separator)
+                .append("db.yml")
+                .toString());
+        final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        return config;
+    }
+
+    public void SaveDbConfig() {
+        final File file = new File(this.tavern.getDataFolder(), "db.yml");
+
+        if (!file.exists()) {
+            this.tavern.getDataFolder().mkdirs();
+            final FileConfiguration config = new YamlConfiguration();
+            config.set("Mysql.dbDriver", "com.mysql.jdbc.Driver");
+            config.set("Mysql.dbURL", "jdbc:mysql://localhost:3306/test");
+            config.set("Mysql.userName", "root");
+            config.set("Mysql.password", "1234");
+            try {
+                config.save(file);
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<PlayerBetDate> getCurrentBetList() {
