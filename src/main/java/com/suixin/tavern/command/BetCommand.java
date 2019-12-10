@@ -43,8 +43,11 @@ public class BetCommand implements CommandExecutor {
 				player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §a§l§m §a§l§m §a§l§m §a§l§m §b§l§m §b§l§m §b§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §e§l§m §e§l§m §e§l§m §e§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
 				player.sendMessage("§6●§a/tn cck <大|小|单|双|豹子> <金额> ：猜猜看押注");
 				player.sendMessage("§6●§a/tn db <大|小|龙> <金额> ：点卷夺宝押注!");
+				player.sendMessage("§6●§a/tn solo create <老虎|棒子|鸡> <金额> ：创建对局!");
+				player.sendMessage("§6●§a/tn solo <对局编号> <老虎|棒子|鸡> ：挑战对局!");
+				player.sendMessage("§6●§a/tn solo list <页码>：查看对局列表!");
 				player.sendMessage("§6●§a/tn time <cck|db> ：查看本期开奖时间!");
-				player.sendMessage("§6●§a/tn rule <cck|db> ：了解游戏规则!");
+				player.sendMessage("§6●§a/tn rule <cck|db|solo> ：了解游戏规则!");
 				player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §a§l§m §a§l§m §a§l§m §a§l§m §b§l§m §b§l§m §b§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §e§l§m §e§l§m §e§l§m §e§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
 				return true;
 			}
@@ -62,58 +65,21 @@ public class BetCommand implements CommandExecutor {
 				//TODO
 			}else if (arg1.equals("rule")){
 				//了解游戏规则
-				if (argsList.size() == 1) {
-					player.sendMessage(ChatColor.RED + "参数缺失：/tn rule <cck|db>");
-				}else if (argsList.size() > 2) {
-					player.sendMessage(ChatColor.RED + "参数个数不正确：/tn rule <cck|db>");
-				}else if (argsList.get(1).equals("cck")){
-
-					player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e【§a§l猜猜看§e】§6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
-					player.sendMessage("§6●§a游戏规则：");
-					player.sendMessage("§6●§3大小单双，赔率两倍，豹子赔率十倍");
-					player.sendMessage("§6●§3最低押注10金币");
-					player.sendMessage("§6●§3每局五分钟，押注结果请查看邮箱");
-					player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
-					return true;
-				}else if (argsList.get(1).equals("db")){
-					player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e【§a§l点券夺宝§e】§6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
-					player.sendMessage("§6●§a游戏规则：");
-					player.sendMessage("§6●§3大小，赔率两倍，龙赔率十倍");
-					player.sendMessage("§6●§3最低押注100点券");
-					player.sendMessage("§6●§3每局十分钟，押注结果请查看邮箱");
-					player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
-					return true;
-				}
+				return selectRule(player, argsList);
 			}else if (arg1.equals("time")){
 				//查看本期开奖剩余时间
-				//TODO
-				if (argsList.size() == 1) {
-					player.sendMessage(ChatColor.RED + "参数缺失：/tn time <cck|db>");
-				}else if (argsList.size() > 2) {
-					player.sendMessage(ChatColor.RED + "参数个数不正确：/tn time <cck|db>");
-				}else if (argsList.get(1).equals("cck")){
-					//查询本期猜猜看的开奖时间
-					String time = selectCaicaikanTime();
-					if (time == null) {
-						player.sendMessage(ChatColor.YELLOW + "奖励发放中，请稍等片刻！");
-					}else {
-						player.sendMessage(ChatColor.YELLOW + "距离本期【猜猜看】开奖还有"+time);
-					}
-					return true;
-				}else if (argsList.get(1).equals("db")){
-					//查询本期猜猜看的开奖时间
-					String time = selectDuobaoTime();
-					if (time == null) {
-						player.sendMessage(ChatColor.YELLOW + "奖励发放中，请稍等片刻！");
-					}else {
-						player.sendMessage(ChatColor.YELLOW + "距离本期【点卷夺宝】开奖还有" + time);
-					}
-					return true;
-				}
+				return selectTime(player, argsList);
+			}else if (arg1.equals("solo")){
+				//老虎棒子鸡
+				return createdSolo(player, argsList);
 			}
 		}
 		return true;
 	}
+
+
+
+
 
 	private Boolean caicaikanBet (Player player, List<String> argsList){
 		if (argsList.size() != 3) {
@@ -157,9 +123,94 @@ public class BetCommand implements CommandExecutor {
         playerBetDate.setGameType("猜猜看");
         playerBetDate.setBetType(betType);
         currentCckBetList.add(playerBetDate);
-        player.sendMessage("§a§l押注成功！！！");
-        player.sendMessage("§a§l输入：/tn time cck 查询开奖时间！");
+        player.sendMessage("§a§l押注成功！输入：/tn time cck 查询开奖时间！");
         return true;
+	}
+
+	private Boolean createdSolo (Player player, List<String> argsList){
+		if (argsList.size() == 1) {
+			player.sendMessage(ChatColor.RED + "参数缺失：输入/tn 查看指令帮助");
+			return true;
+		}
+
+		if (argsList.size() >= 2 && argsList.get(1).equals("create")) {
+			if (argsList.size() != 4) {
+				player.sendMessage(ChatColor.RED + "参数个数不正确：/tn solo create <老虎|棒子|鸡> <金额>");
+				return true;
+			}
+			//发起对局
+
+
+		}else if (argsList.size() >= 2){
+			if (argsList.size() != 3) {
+				player.sendMessage(ChatColor.RED + "参数个数不正确：/tn solo <对局编号> <老虎|棒子|鸡>");
+				return true;
+			}
+			//挑战对局
+
+		}
+		return true;
+	}
+
+	private Boolean selectTime (Player player, List<String> argsList){
+		if (argsList.size() == 1) {
+			player.sendMessage(ChatColor.RED + "参数缺失：/tn time <cck|db>");
+		}else if (argsList.size() > 2) {
+			player.sendMessage(ChatColor.RED + "参数个数不正确：/tn time <cck|db>");
+		}else if (argsList.get(1).equals("cck")){
+			//查询本期猜猜看的开奖时间
+			String time = selectCaicaikanTime();
+			if (time == null) {
+				player.sendMessage(ChatColor.YELLOW + "奖励发放中，请稍等片刻！");
+			}else {
+				player.sendMessage(ChatColor.YELLOW + "距离本期【猜猜看】开奖还有"+time);
+			}
+			return true;
+		}else if (argsList.get(1).equals("db")){
+			//查询本期猜猜看的开奖时间
+			String time = selectDuobaoTime();
+			if (time == null) {
+				player.sendMessage(ChatColor.YELLOW + "奖励发放中，请稍等片刻！");
+			}else {
+				player.sendMessage(ChatColor.YELLOW + "距离本期【点卷夺宝】开奖还有" + time);
+			}
+			return true;
+		}
+		return true;
+	}
+
+	Boolean selectRule (Player player, List<String> argsList){
+		if (argsList.size() == 1) {
+			player.sendMessage(ChatColor.RED + "参数缺失：/tn rule <cck|db>");
+		}else if (argsList.size() > 2) {
+			player.sendMessage(ChatColor.RED + "参数个数不正确：/tn rule <cck|db>");
+		}else if (argsList.get(1).equals("cck")){
+
+			player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e【§a§l猜猜看§e】§6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+			player.sendMessage("§6●§a游戏规则：");
+			player.sendMessage("§6●§3大小单双，赔率两倍，豹子赔率十倍");
+			player.sendMessage("§6●§3最低押注10金币");
+			player.sendMessage("§6●§3每局五分钟，押注结果请查看邮箱");
+			player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+			return true;
+		}else if (argsList.get(1).equals("db")){
+			player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e【§a§l点券夺宝§e】§6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+			player.sendMessage("§6●§a游戏规则：");
+			player.sendMessage("§6●§3大小，赔率两倍，龙赔率十倍");
+			player.sendMessage("§6●§3最低押注100点券");
+			player.sendMessage("§6●§3每局十分钟，押注结果请查看邮箱");
+			player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+			return true;
+		}else if (argsList.get(1).equals("solo")){
+			player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e【§a§l老虎棒子鸡§e】§6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+			player.sendMessage("§6●§a游戏规则：");
+			player.sendMessage("§6●§3老虎吃鸡，鸡吃棒，棒打老虎");
+			player.sendMessage("§6●§3玩家可以发起对局，也可以挑战对局");
+			player.sendMessage("§6●§3挑战结果请查看邮箱");
+			player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+			return true;
+		}
+		return true;
 	}
 
 	private String selectCaicaikanTime () {
@@ -167,14 +218,14 @@ public class BetCommand implements CommandExecutor {
 		long betTime = tavern.getTimeMillis();
 		long l = betTime - millis;
 		long mu = l / (60 * 1000);
-		long mi = (l % (60 * 1000))/1000;
+		long sec = (l % (60 * 1000))/1000;
 		String time;
-		if (mu < 0 || mi <= 0){
+		if (mu < 0 || sec <= 0){
 			time = null;
 		}else if (mu == 0){
-			time = mi+"秒";
+			time = sec+"秒";
 		}else {
-			time = mu+"分"+mi+"秒";
+			time = mu+"分"+sec+"秒";
 		}
 		return time;
 	}

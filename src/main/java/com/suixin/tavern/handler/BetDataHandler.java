@@ -40,9 +40,9 @@ public class BetDataHandler {
             }
         }
         final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        config.set("开奖期数", historyLotteryResults.getPeriods());
-        config.set("玩法类型", historyLotteryResults.getGameType());
-        config.set("开奖结果", historyLotteryResults.getResult());
+        config.addDefault("开奖期数", historyLotteryResults.getPeriods());
+        config.addDefault("玩法类型", historyLotteryResults.getGameType());
+        config.addDefault("开奖结果", historyLotteryResults.getResult());
         try {
             config.save(file);
         } catch (final Exception e) {
