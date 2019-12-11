@@ -16,6 +16,10 @@ public class JdbcUtil {
     private String dbURL;        //定义URL
     private String userName;    //定义用户名
     private String password;    //定义密码
+//    private String dbDriver = "com.mysql.cj.jdbc.Driver";    //定义驱动
+//    private String dbURL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT";
+//    private String userName = "root";    //定义用户名
+//    private String password = "1234";    //定义密码
 
     //从配置文件取数据库链接参数
     private void loadConnProperties() {
@@ -26,7 +30,6 @@ public class JdbcUtil {
         this.dbURL = fileConfiguration.getString("url");
         this.userName = fileConfiguration.getString("username");
         this.password = fileConfiguration.getString("password");
-
     }
 
     public boolean openConnection() {
@@ -40,15 +43,17 @@ public class JdbcUtil {
             System.err.println("db: " + classnotfoundexception.getMessage());
         } catch (SQLException sqlexception) {
             System.err.println("db.getconn(): " + sqlexception.getMessage());
+            System.out.println(sqlexception.getMessage());
         }
         return false;
     }
 
-
+    @Override
     protected void finalize() throws Exception {
         try {
-            if (null != conn)
+            if (null != conn){
                 conn.close();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -59,8 +64,9 @@ public class JdbcUtil {
     public ResultSet execQuery(String sql) throws Exception {
         ResultSet rstSet = null;
         try {
-            if (null == conn)
+            if (null == conn){
                 throw new Exception("Database not connected!");
+            }
             Statement stmt = conn.createStatement();
             rstSet = stmt.executeQuery(sql);
         } catch (SQLException e) {
@@ -73,8 +79,9 @@ public class JdbcUtil {
     public ResultSet getInsertObjectIDs(String insertSql) throws Exception {
         ResultSet rst = null;
         try {
-            if (null == conn)
+            if (null == conn){
                 throw new Exception("Database not connected!");
+            }
 
             Statement stmt = conn.createStatement();
 
@@ -92,8 +99,9 @@ public class JdbcUtil {
         ResultSet rst = null;
         PreparedStatement pstmt = null;
         try {
-            if (null == conn)
+            if (null == conn){
                 throw new Exception("Database not connected!");
+            }
             pstmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
 
             if (null != params) {
@@ -114,9 +122,9 @@ public class JdbcUtil {
     public int execCommand(String sql) throws Exception {
         int flag = 0;
         try {
-            if (null == conn)
+            if (null == conn){
                 throw new Exception("Database not connected!");
-
+            }
             Statement stmt = conn.createStatement();
             flag = stmt.executeUpdate(sql);
 
@@ -166,8 +174,9 @@ public void callStordProc(String sql, Object[] inParams, SqlParameter[] outParam
     public PreparedStatement execPrepared(String psql) throws Exception {
         PreparedStatement pstmt = null;
         try {
-            if (null == conn)
+            if (null == conn){
                 throw new Exception("Database not connected!");
+            }
             pstmt = conn.prepareStatement(psql);
         } catch (SQLException e) {
             e.printStackTrace();

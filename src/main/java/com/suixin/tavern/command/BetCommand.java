@@ -2,7 +2,9 @@ package com.suixin.tavern.command;
 
 import com.suixin.tavern.Tavern;
 import com.suixin.tavern.entity.PlayerBetDate;
+import com.suixin.tavern.entity.SoloEntity;
 import com.suixin.tavern.handler.BetDataHandler;
+import com.suixin.tavern.handler.SoloDatabaseHandler;
 import com.suixin.tavern.util.VaultAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class BetCommand implements CommandExecutor {
@@ -20,7 +23,11 @@ public class BetCommand implements CommandExecutor {
 	private List<PlayerBetDate> currentCckBetList;
 	private List<PlayerBetDate> currentDbBetList;
 	String[] strs = {"大","小","单","双","豹子"};
-	private final List<String> betList = Arrays.asList(strs);
+	private final List<String> betCckList = Arrays.asList(strs);
+	String[] strs1 = {"大","小","龙"};
+	private final List<String> betDbList = Arrays.asList(strs1);
+	String[] strs2 = {"老虎","棒子","鸡"};
+	private final List<String> typeList = Arrays.asList(strs2);
 
 	public BetCommand(final BetDataHandler databaseHandler,final Tavern tavern) {
 		this.betDataHandler = databaseHandler;
@@ -78,9 +85,12 @@ public class BetCommand implements CommandExecutor {
 	}
 
 
-
-
-
+	/**
+	 * 猜猜看押注
+	 * @param player
+	 * @param argsList
+	 * @return
+	 */
 	private Boolean caicaikanBet (Player player, List<String> argsList){
 		if (argsList.size() != 3) {
 			player.sendMessage(ChatColor.RED + "参数不正确!");
@@ -88,7 +98,7 @@ public class BetCommand implements CommandExecutor {
 			return true;
 		}
 		String betType = argsList.get(1);
-		if (!betList.contains(betType)) {
+		if (!betCckList.contains(betType)) {
 			player.sendMessage(ChatColor.RED + "押注类型必须是（大,小,单,双,豹子）中的一个");
 			return true;
 		}
@@ -127,6 +137,12 @@ public class BetCommand implements CommandExecutor {
         return true;
 	}
 
+	/**
+	 * 对局创建和挑战
+	 * @param player
+	 * @param argsList
+	 * @return
+	 */
 	private Boolean createdSolo (Player player, List<String> argsList){
 		if (argsList.size() == 1) {
 			player.sendMessage(ChatColor.RED + "参数缺失：输入/tn 查看指令帮助");
@@ -138,20 +154,85 @@ public class BetCommand implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "参数个数不正确：/tn solo create <老虎|棒子|鸡> <金额>");
 				return true;
 			}
-			//发起对局
+			String type = argsList.get(2);
+			if (!typeList.contains(type)) {
+				player.sendMessage(ChatColor.RED + "对局类型必须是（老虎，棒子，鸡）中的一个");
+				return true;
+			}
 
+			String money = argsList.get(3);
+			Integer amount = 0;
+			try {
+				amount = Integer.valueOf(money);
+			}catch (Exception e){
+				player.sendMessage(ChatColor.RED + "创建对局的金额必须是整数");
+				return true;
+			}
+			if (amount < 10) {
+				player.sendMessage(ChatColor.RED + "对局金额必须大于10");
+				return true;
+			}
+
+			//判断是否有足够的金钱
+			double money1 = VaultAPI.getMoney(player.getName());
+			if (money1 < amount) {
+				player.sendMessage(ChatColor.RED + "你没有足够的金币！");
+				return true;
+			}
+
+			//创建对局
+			SoloEntity soloEntity = new SoloEntity();
+			soloEntity.setPlayerName(player.getName());//对局创建人
+			soloEntity.setType(type);//类型
+			soloEntity.setMoney(new Double(amount));//金额
+			soloEntity.setNum(0);//挑战次数
+			soloEntity.setState(1);//状态：待挑战
+			soloEntity.setResult("待挑战");//结果
+			soloEntity.setStatus(1);
+			soloEntity.setCreated(new Date());
+			int res = SoloDatabaseHandler.soloInsert(soloEntity);
+			//扣除金币
+			if (res == 1) {
+				VaultAPI.removeMoney(player.getName(),amount);
+			}
+			return true;
 
 		}else if (argsList.size() >= 2){
+			//挑战对局
 			if (argsList.size() != 3) {
 				player.sendMessage(ChatColor.RED + "参数个数不正确：/tn solo <对局编号> <老虎|棒子|鸡>");
 				return true;
 			}
-			//挑战对局
+			String id = argsList.get(1);
+			Integer integer = null;
+			try {
+				integer = Integer.valueOf(id);
+			}catch (Exception e){
+				player.sendMessage(ChatColor.RED + "挑战的对局编号必须是整数");
+				return true;
+			}
+			String type = argsList.get(2);
+			if (!typeList.contains(type)) {
+				player.sendMessage(ChatColor.RED + "对局类型必须是（老虎，棒子，鸡）中的一个");
+				return true;
+			}
+			//查询挑战编号是否存在
+
+			//判断金额是否足够发起挑战
+			//挑战结果通知
+			//发放奖励
+			//修改并保存对局数据
 
 		}
 		return true;
 	}
 
+	/**
+	 * 查询开奖时间（猜猜看和电卷夺宝）
+	 * @param player
+	 * @param argsList
+	 * @return
+	 */
 	private Boolean selectTime (Player player, List<String> argsList){
 		if (argsList.size() == 1) {
 			player.sendMessage(ChatColor.RED + "参数缺失：/tn time <cck|db>");
@@ -179,6 +260,12 @@ public class BetCommand implements CommandExecutor {
 		return true;
 	}
 
+	/**
+	 * 查询游戏规则
+	 * @param player
+	 * @param argsList
+	 * @return
+	 */
 	Boolean selectRule (Player player, List<String> argsList){
 		if (argsList.size() == 1) {
 			player.sendMessage(ChatColor.RED + "参数缺失：/tn rule <cck|db>");

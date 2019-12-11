@@ -4,8 +4,10 @@ import com.suixin.tavern.command.*;
 import com.suixin.tavern.entity.*;
 import com.suixin.tavern.handler.BetDataHandler;
 import com.suixin.tavern.handler.DatabaseHandler;
+import com.suixin.tavern.handler.SoloDatabaseHandler;
 import com.suixin.tavern.listener.HandlePlayerPrefix;
 import com.suixin.tavern.handler.Ranks;
+import com.suixin.tavern.util.JdbcUtil;
 import com.suixin.tavern.util.VaultAPI;
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI;
 import org.bukkit.Bukkit;
@@ -47,9 +49,25 @@ public class Tavern extends JavaPlugin {
 		getCommand("ladder").setExecutor(this.ladder);
 		getCommand("cash").setExecutor(this.cash);
 		getCommand("tn").setExecutor(this.betCommand);
-		timeTask ();
+		timeTask ();//启动CCK任务
 		api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
-		VaultAPI.setupEconomy();
+		if (api != null) {
+			getLogger().info("[Tavern]:TitleManager连接成功");
+		}else{
+			getLogger().info("[Tavern]:TitleManager连接失败!");
+		}
+		boolean economy = VaultAPI.setupEconomy();
+		if (economy) {
+			getLogger().info("[Tavern]:Vault连接成功");
+		}else{
+			getLogger().info("[Tavern]:Vault连接失败!");
+		}
+		boolean connection = new JdbcUtil().openConnection();//加载数据库驱动
+		if (connection) {
+			getLogger().info("[Tavern]:数据库连接成功");
+		}else{
+			getLogger().info("[Tavern]:数据库连接失败!");
+		}
 	}
 
 

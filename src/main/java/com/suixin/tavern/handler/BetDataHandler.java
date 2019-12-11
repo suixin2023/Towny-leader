@@ -88,8 +88,8 @@ public class BetDataHandler {
         if (!file.exists()) {
             this.tavern.getDataFolder().mkdirs();
             final FileConfiguration config = new YamlConfiguration();
-            config.set("Mysql.dbDriver", "com.mysql.jdbc.Driver");
-            config.set("Mysql.dbURL", "jdbc:mysql://localhost:3306/test");
+            config.set("Mysql.dbDriver", "com.mysql.cj.jdbc.Driver");
+            config.set("Mysql.dbURL", "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT");
             config.set("Mysql.userName", "root");
             config.set("Mysql.password", "1234");
             try {
