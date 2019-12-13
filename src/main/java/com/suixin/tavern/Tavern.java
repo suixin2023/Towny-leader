@@ -24,6 +24,7 @@ public class Tavern extends JavaPlugin {
 	private BetCommand betCommand;
 	private DatabaseHandler databaseHandler;
 	private BetDataHandler betDataHandler;
+	private SoloDatabaseHandler soloDatabaseHandler;
 	private Ranks ranks;
 	private HandlePlayerPrefix handlePlayerPrefix;
 	private LeaderBoardCommand ladder;
@@ -38,6 +39,7 @@ public class Tavern extends JavaPlugin {
 		this.winner = new ArrayList<>();
 		this.databaseHandler = new DatabaseHandler(this);
 		this.betDataHandler = new BetDataHandler(this);
+		this.soloDatabaseHandler = new SoloDatabaseHandler(this);
 		this.ranks = new Ranks(this.databaseHandler, this);
 		this.rankCommand = new RankCommand(this.databaseHandler, this.ranks);
 		this.betCommand = new BetCommand(this.betDataHandler, this);
@@ -52,21 +54,23 @@ public class Tavern extends JavaPlugin {
 		timeTask ();//启动CCK任务
 		api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
 		if (api != null) {
-			getLogger().info("[Tavern]:TitleManager连接成功");
+			getLogger().info("§f====================================");
+			getLogger().info("§aTitleManager连接成功");
 		}else{
-			getLogger().info("[Tavern]:TitleManager连接失败!");
+			getLogger().info("§cTitleManager连接失败!");
 		}
 		boolean economy = VaultAPI.setupEconomy();
 		if (economy) {
-			getLogger().info("[Tavern]:Vault连接成功");
+			getLogger().info("§aVault连接成功");
 		}else{
-			getLogger().info("[Tavern]:Vault连接失败!");
+			getLogger().info("§cVault连接失败!");
 		}
-		boolean connection = new JdbcUtil().openConnection();//加载数据库驱动
+		boolean connection = new JdbcUtil().openConnection(this.betDataHandler);//加载数据库驱动
 		if (connection) {
-			getLogger().info("[Tavern]:数据库连接成功");
+			getLogger().info("§a数据库连接成功");
 		}else{
-			getLogger().info("[Tavern]:数据库连接失败!");
+			getLogger().info("§c数据库连接失败!请联系开发人员解决：QQ:2469012478");
+            getLogger().info("§f====================================");
 		}
 	}
 
@@ -206,5 +210,13 @@ public class Tavern extends JavaPlugin {
 
 	public void setTimeMillis(Long timeMillis) {
 		this.timeMillis = timeMillis;
+	}
+
+	public BetDataHandler getBetDataHandler() {
+		return betDataHandler;
+	}
+
+	public void setBetDataHandler(BetDataHandler betDataHandler) {
+		this.betDataHandler = betDataHandler;
 	}
 }

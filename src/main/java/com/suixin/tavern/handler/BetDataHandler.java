@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class BetDataHandler {
-    private Tavern tavern;
+    private final Tavern tavern;
     private HistoryLotteryResults historyLotteryResults;
     List<PlayerBetDate> currentBetList =new ArrayList<>();
 
@@ -19,9 +19,6 @@ public class BetDataHandler {
         this.tavern = tavern;
         this.historyLotteryResults = new HistoryLotteryResults();
         this.SaveDbConfig();
-    }
-    public BetDataHandler() {
-
     }
     //保存本期开奖信息
     public void SaveCckBetDate(HistoryLotteryResults historyLotteryResults) {
@@ -72,9 +69,9 @@ public class BetDataHandler {
     }
 
     //读取数据库配置数据
-    public FileConfiguration LoadPlayerData( ) {
+    public FileConfiguration LoadDbData( ) {
         final File file = new File((new StringBuilder())
-                .append(this.tavern.getDataFolder())//返回存放插件文件数据的文件夹.
+                .append(this.tavern.getDataFolder())
                 .append(File.separator)
                 .append("db.yml")
                 .toString());

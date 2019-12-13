@@ -12,40 +12,40 @@ import java.sql.Statement;
 
 public class JdbcUtil {
     private Connection conn = null;
-    private String dbDriver;    //定义驱动
-    private String dbURL;        //定义URL
-    private String userName;    //定义用户名
-    private String password;    //定义密码
-//    private String dbDriver = "com.mysql.cj.jdbc.Driver";    //定义驱动
-//    private String dbURL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT";
-//    private String userName = "root";    //定义用户名
-//    private String password = "1234";    //定义密码
+//    private String dbDriver;    //定义驱动
+//    private String dbURL;        //定义URL
+//    private String userName;    //定义用户名
+//    private String password;    //定义密码
+    private String dbDriver = "com.mysql.cj.jdbc.Driver";    //定义驱动
+    private String dbURL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT";
+    private String userName = "root";    //定义用户名
+    private String password = "1234";    //定义密码
 
     //从配置文件取数据库链接参数
-    private void loadConnProperties() {
+    private void loadConnProperties(BetDataHandler betDataHandler) {
         //读取数据库配置
-        BetDataHandler betDataHandler = new BetDataHandler();
-        FileConfiguration fileConfiguration = betDataHandler.LoadPlayerData();
+        FileConfiguration fileConfiguration = betDataHandler.LoadDbData();
         this.dbDriver = fileConfiguration.getString("driver");//从配置文件中取得相应的参数并设置类变量
         this.dbURL = fileConfiguration.getString("url");
         this.userName = fileConfiguration.getString("username");
         this.password = fileConfiguration.getString("password");
     }
 
-    public boolean openConnection() {
+    public boolean openConnection(BetDataHandler betDataHandler) {
         try {
-            loadConnProperties();
+//            loadConnProperties(betDataHandler);
             Class.forName(dbDriver);
             this.conn = DriverManager.getConnection(dbURL, userName, password);
             return true;
         } catch (ClassNotFoundException classnotfoundexception) {
             classnotfoundexception.printStackTrace();
             System.err.println("db: " + classnotfoundexception.getMessage());
+            return false;
         } catch (SQLException sqlexception) {
             System.err.println("db.getconn(): " + sqlexception.getMessage());
             System.out.println(sqlexception.getMessage());
+            return false;
         }
-        return false;
     }
 
     @Override

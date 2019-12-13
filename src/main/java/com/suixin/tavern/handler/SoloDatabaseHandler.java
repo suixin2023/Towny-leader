@@ -1,5 +1,6 @@
 package com.suixin.tavern.handler;
 
+import com.suixin.tavern.Tavern;
 import com.suixin.tavern.entity.SoloEntity;
 import com.suixin.tavern.util.JdbcUtil;
 
@@ -13,14 +14,20 @@ import java.sql.ResultSet;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class SoloDatabaseHandler {
+    private static Tavern tavern;
+
+    public SoloDatabaseHandler(final Tavern tavern) {
+        this.tavern = tavern;
+    }
 
     //对局写入
     public static int soloInsert(SoloEntity soloEntity){
         JdbcUtil db = new JdbcUtil();
-        db.openConnection();
+        db.openConnection(tavern.getBetDataHandler());
         String sql = "insert into solo(player_name, type, money, num , state , result , status , created )"
                 + " values(?, ?, ?, ?, ?, ?, ?, ?)";
         Object [] params = new Object[8];
@@ -56,7 +63,7 @@ public class SoloDatabaseHandler {
     //创建表
     public static void createTable() {
         JdbcUtil db = new JdbcUtil();
-        db.openConnection();
+        db.openConnection(tavern.getBetDataHandler());
             String tableSql = "CREATE TABLE `solo` (" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT," +
                     "  `player_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '玩家名字'," +
@@ -94,7 +101,7 @@ public class SoloDatabaseHandler {
 
         try {
             JdbcUtil db = new JdbcUtil();
-            db.openConnection();
+            db.openConnection(tavern.getBetDataHandler());
             fis = new FileInputStream(file);
             params[4]=fis;
 
@@ -122,31 +129,10 @@ public class SoloDatabaseHandler {
         params[0]=id;
         try {
             JdbcUtil db = new JdbcUtil();
-            db.openConnection();
+            db.openConnection(tavern.getBetDataHandler());
             ResultSet rst = db.execQuery(sql);
             if (rst!=null) {
-                while(rst.next()){
-                    System.out.println(rst.getString("play_name"));
-                    System.out.println(rst.getFloat("play_ticket_price"));
-                    int playID=rst.getInt("play_id");
 
-                    byte[] buf = new byte[256];
-                    Blob blob = rst.getBlob("play_image");
-                    if(blob!=null ){
-                        //需要在在工程目录下建立路径Cache/Play_Image/，然后将照片缓存到该路径下
-                        File file = new File("Cache/Play_Image/"+ playID + ".jpg");
-                        FileOutputStream sout = new FileOutputStream(file);
-                        InputStream in = blob.getBinaryStream();//获取BLOB数据的输入数据流
-
-                        for (int i = in.read(buf); i != -1;) {
-                            sout.write(buf);
-                            i = in.read(buf);
-                        }
-                        in.close();
-                        sout.close();
-                    }
-
-                }
             }
 
             db.close(rst);
@@ -170,7 +156,7 @@ public class SoloDatabaseHandler {
         soloEntity.setResult("输");
         soloEntity.setStatus(1);
         soloEntity.setCreated(new Date());
-        soloInsert(soloEntity);
+//        soloInsert(soloEntity);
     }
 
 }
