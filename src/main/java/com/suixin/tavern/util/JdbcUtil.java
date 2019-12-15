@@ -12,28 +12,28 @@ import java.sql.Statement;
 
 public class JdbcUtil {
     private Connection conn = null;
-//    private String dbDriver;    //定义驱动
-//    private String dbURL;        //定义URL
-//    private String userName;    //定义用户名
-//    private String password;    //定义密码
-    private String dbDriver = "com.mysql.cj.jdbc.Driver";    //定义驱动
-    private String dbURL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT";
-    private String userName = "root";    //定义用户名
-    private String password = "1234";    //定义密码
+    private String dbDriver;    //定义驱动
+    private String dbURL;        //定义URL
+    private String userName;    //定义用户名
+    private String password;    //定义密码
+//    private String dbDriver = "com.mysql.cj.jdbc.Driver";    //定义驱动
+//    private String dbURL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT";
+//    private String userName = "root";    //定义用户名
+//    private String password = "1234";    //定义密码
 
     //从配置文件取数据库链接参数
     private void loadConnProperties(BetDataHandler betDataHandler) {
         //读取数据库配置
         FileConfiguration fileConfiguration = betDataHandler.LoadDbData();
-        this.dbDriver = fileConfiguration.getString("driver");//从配置文件中取得相应的参数并设置类变量
-        this.dbURL = fileConfiguration.getString("url");
-        this.userName = fileConfiguration.getString("username");
-        this.password = fileConfiguration.getString("password");
+        this.dbDriver = fileConfiguration.getString("Mysql.dbDriver");//从配置文件中取得相应的参数并设置类变量
+        this.dbURL = fileConfiguration.getString("Mysql.dbURL");
+        this.userName = fileConfiguration.getString("Mysql.userName");
+        this.password = fileConfiguration.getString("Mysql.password");
     }
 
     public boolean openConnection(BetDataHandler betDataHandler) {
         try {
-//            loadConnProperties(betDataHandler);
+            loadConnProperties(betDataHandler);
             Class.forName(dbDriver);
             this.conn = DriverManager.getConnection(dbURL, userName, password);
             return true;
@@ -68,6 +68,22 @@ public class JdbcUtil {
                 throw new Exception("Database not connected!");
             }
             Statement stmt = conn.createStatement();
+            rstSet = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rstSet;
+    }
+
+    // 查询并得到结果集(预编译对象)
+    public ResultSet executeQuery(String sql,String [] params) throws Exception {
+        ResultSet rstSet = null;
+        try {
+            if (null == conn){
+                throw new Exception("Database not connected!");
+            }
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1,params[0]);
             rstSet = stmt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();

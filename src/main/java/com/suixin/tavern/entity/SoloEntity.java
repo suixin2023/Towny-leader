@@ -7,9 +7,9 @@ public class SoloEntity {
     private String playerName;
     private String type;
     private Double money;
-    private Integer num;
     private Integer state;
     private String result;
+    private Integer draw;
     private Integer status;
     private Date created;
 
@@ -45,14 +45,6 @@ public class SoloEntity {
         this.money = money;
     }
 
-    public Integer getNum() {
-        return num;
-    }
-
-    public void setNum(Integer num) {
-        this.num = num;
-    }
-
     public Integer getState() {
         return state;
     }
@@ -83,5 +75,13 @@ public class SoloEntity {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public Integer getDraw() {
+        return draw;
+    }
+
+    public void setDraw(Integer draw) {
+        this.draw = draw;
     }
 }

@@ -53,25 +53,25 @@ public class Tavern extends JavaPlugin {
 		getCommand("tn").setExecutor(this.betCommand);
 		timeTask ();//启动CCK任务
 		api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
+		getLogger().info("==================[Tavern]==================");
 		if (api != null) {
-			getLogger().info("§f====================================");
-			getLogger().info("§aTitleManager连接成功");
+			getLogger().info("TitleManager连接成功");
 		}else{
-			getLogger().info("§cTitleManager连接失败!");
+			getLogger().info("TitleManager连接失败!插件将使用聊天栏通知");
 		}
 		boolean economy = VaultAPI.setupEconomy();
 		if (economy) {
-			getLogger().info("§aVault连接成功");
+			getLogger().info("Vault连接成功");
 		}else{
-			getLogger().info("§cVault连接失败!");
+			getLogger().info("Vault连接失败!插件无法正常工作");
 		}
 		boolean connection = new JdbcUtil().openConnection(this.betDataHandler);//加载数据库驱动
 		if (connection) {
-			getLogger().info("§a数据库连接成功");
+			getLogger().info("Mysql连接成功");
 		}else{
-			getLogger().info("§c数据库连接失败!请联系开发人员解决：QQ:2469012478");
-            getLogger().info("§f====================================");
+			getLogger().info("Mysql连接失败!请联系开发人员解决：QQ:2469012478");
 		}
+		getLogger().info("==================[Tavern]==================");
 	}
 
 
@@ -125,7 +125,7 @@ public class Tavern extends JavaPlugin {
 				return;
 			}
 
-		}.runTaskTimer(this, 0L, 1*60*20L);
+		}.runTaskTimer(this, 0L, 5*60*20L);
 		// 插件主类  延时  定时
 	}
 
@@ -187,9 +187,14 @@ public class Tavern extends JavaPlugin {
 					value = value +"【"+playerBetDate.getPlayerName()+"】"+" ";
 				}
 				player.sendMessage("§a第§6"+historyLotteryResults.getPeriods()+"§a期【猜猜看】结果：§6"+historyLotteryResults.getResult());
-				api.sendSubtitle(player,value,100,100,100);
-				api.sendTitle(player,"§a恭喜以下玩家在§6【猜猜看】§a中获得前三甲！",100,100,100);
-				api.sendActionbar(player,"§a第§6"+historyLotteryResults.getPeriods()+"§a期猜猜看结果：§6"+historyLotteryResults.getResult());
+				if (api == null) {
+					player.sendMessage("§a[§c公告§a]:§a恭喜以下玩家在§6【猜猜看】§a中获得前三甲！");
+					player.sendMessage("§a[§c公告§a]:" + value);
+				}else{
+					api.sendSubtitle(player,value,100,100,100);
+					api.sendTitle(player,"§a恭喜以下玩家在§6【猜猜看】§a中获得前三甲！",100,100,100);
+					api.sendActionbar(player,"§a第§6"+historyLotteryResults.getPeriods()+"§a期猜猜看结果：§6"+historyLotteryResults.getResult());
+				}
 			}
 		}else {
 			while(iterator.hasNext()) {

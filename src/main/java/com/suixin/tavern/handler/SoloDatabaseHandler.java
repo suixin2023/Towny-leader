@@ -6,19 +6,15 @@ import com.suixin.tavern.util.JdbcUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
+import java.sql.*;
 
-import java.sql.Blob;
-import java.sql.SQLException;
+import java.util.*;
 import java.util.Date;
-import java.util.HashMap;
 
 
 public class SoloDatabaseHandler {
     private static Tavern tavern;
+    static Boolean doCreate = true;
 
     public SoloDatabaseHandler(final Tavern tavern) {
         this.tavern = tavern;
@@ -28,33 +24,33 @@ public class SoloDatabaseHandler {
     public static int soloInsert(SoloEntity soloEntity){
         JdbcUtil db = new JdbcUtil();
         db.openConnection(tavern.getBetDataHandler());
-        String sql = "insert into solo(player_name, type, money, num , state , result , status , created )"
+        String sql = "insert into solo(player_name, type, money , state , result , draw , status , created )"
                 + " values(?, ?, ?, ?, ?, ?, ?, ?)";
         Object [] params = new Object[8];
         params[0]= soloEntity.getPlayerName();
         params[1]= soloEntity.getType();
         params[2]= soloEntity.getMoney();
-        params[3]= soloEntity.getNum();
-        params[4]= soloEntity.getState();
-        params[5]= soloEntity.getResult();
+        params[3]= soloEntity.getState();
+        params[4]= soloEntity.getResult();
+        params[5]= soloEntity.getDraw();
         params[6]= soloEntity.getStatus();
         params[7]= soloEntity.getCreated();
         try {
             ResultSet rst= db.getInsertObjectIDs(sql, params);
-
-            if (rst!=null && rst.first()) {
+            if (rst != null) {
                 return 1;
-            }else {
-                //创建表
-                SoloDatabaseHandler.createTable();
-                soloInsert(soloEntity);//重新写入
             }
 
             db.close(rst);
             db.close();
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            if (doCreate) {
+                //创建表
+                SoloDatabaseHandler.createTable();
+                doCreate = false;
+                soloInsert(soloEntity);//重新写入
+            }
             e.printStackTrace();
         }
         return 0;
@@ -69,9 +65,9 @@ public class SoloDatabaseHandler {
                     "  `player_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '玩家名字'," +
                     "  `type` varchar(255) DEFAULT NULL COMMENT '对局类型'," +
                     "  `money` double(14,0) DEFAULT NULL COMMENT '金额'," +
-                    "  `num` int(11) DEFAULT NULL COMMENT '挑战次数'," +
                     "  `state` int(2) DEFAULT NULL COMMENT '状态：1待挑战2已被挑战'," +
                     "  `result` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '挑战结果：输or赢'," +
+                    "  `draw` int(11) DEFAULT NULL COMMENT '领取状态：1待领取 2已领取'," +
                     "  `status` int(2) DEFAULT NULL COMMENT '有效性：1有效-1无效'," +
                     "  `created` timestamp NULL DEFAULT NULL COMMENT '创建时间'," +
                     "  PRIMARY KEY (`id`)" +
@@ -122,16 +118,47 @@ public class SoloDatabaseHandler {
     }
 
     //查询对局数据
-    private static void selectSoloData(Integer id){
-        String sql = "select * from solo where id = ?";
-
-        Object [] params = new Object[1];
-        params[0]=id;
+    public static List<SoloEntity> selectSoloData(Integer limit){
+        String sql = "select * from solo where state = 1 limit "+limit+",5";
+        List<SoloEntity> list = new ArrayList<>();
         try {
             JdbcUtil db = new JdbcUtil();
             db.openConnection(tavern.getBetDataHandler());
             ResultSet rst = db.execQuery(sql);
             if (rst!=null) {
+                while (rst.next()){
+                    SoloEntity soloEntity = new SoloEntity();
+                    soloEntity.setId(rst.getInt("id"));
+                    soloEntity.setPlayerName(rst.getString("player_name"));
+                    soloEntity.setMoney(rst.getDouble("money"));
+                    list.add(soloEntity);
+                }
+            }
+
+            db.close(rst);
+            db.close();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    //查询对局编号
+    public static SoloEntity selectSoloDataNum(Integer solonum){
+        String sql = "select * from solo where state = 1 and id = "+solonum;
+        SoloEntity soloEntity = new SoloEntity();
+        try {
+            JdbcUtil db = new JdbcUtil();
+            db.openConnection(tavern.getBetDataHandler());
+            ResultSet rst = db.execQuery(sql);
+            if (rst!=null) {
+                rst.next();
+                soloEntity.setId(rst.getInt("id"));
+                soloEntity.setType(rst.getString("type"));
+                soloEntity.setPlayerName(rst.getString("player_name"));
+                soloEntity.setMoney(rst.getDouble("money"));
 
             }
 
@@ -142,21 +169,66 @@ public class SoloDatabaseHandler {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return soloEntity;
+    }
 
+    //修改对局状态
+    public static void updateSoloDataNum(Integer solonum,String state){
+        String sql;
+            sql = "update solo set state = 2,result ='"+state+"' where id = "+solonum;
+        try {
+            JdbcUtil db = new JdbcUtil();
+            db.openConnection(tavern.getBetDataHandler());
+            db.execCommand(sql);
+            db.close();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    //查询总页数
+    public static Integer selectSoloDataCount(){
+        String sql = "select count(*) as datacount from solo";
+        Integer datacount=0;
+        try {
+            JdbcUtil db = new JdbcUtil();
+            db.openConnection(tavern.getBetDataHandler());
+            ResultSet rst = db.execQuery(sql);
+            rst.next();
+            datacount = rst.getInt("datacount");
+            db.close(rst);
+            db.close();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return datacount;
     }
 
     public static void main(String[] args) {
 //        createTable();
-        SoloEntity soloEntity = new SoloEntity();
-        soloEntity.setPlayerName("测试");
-        soloEntity.setType("老虎");
-        soloEntity.setMoney(new Double("0.00"));
-        soloEntity.setNum(10);
-        soloEntity.setState(1);
-        soloEntity.setResult("输");
-        soloEntity.setStatus(1);
-        soloEntity.setCreated(new Date());
+//        SoloEntity soloEntity = new SoloEntity();
+//        soloEntity.setPlayerName("测试");
+//        soloEntity.setType("老虎");
+//        soloEntity.setMoney(new Double("0.00"));
+//        soloEntity.setNum(10);
+//        soloEntity.setState(1);
+//        soloEntity.setResult("输");
+//        soloEntity.setStatus(1);
+//        soloEntity.setCreated(new Date());
 //        soloInsert(soloEntity);
+        int j = 8 % 5;
+        int i = 8 / 5;
+        Integer countnum = 0;
+        if (i == 0) {
+            countnum = j;
+        }else {
+            countnum = j + 1;
+        }
+        System.out.println(countnum);
     }
 
 }

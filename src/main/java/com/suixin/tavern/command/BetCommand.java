@@ -185,28 +185,86 @@ public class BetCommand implements CommandExecutor {
 			soloEntity.setPlayerName(player.getName());//对局创建人
 			soloEntity.setType(type);//类型
 			soloEntity.setMoney(new Double(amount));//金额
-			soloEntity.setNum(0);//挑战次数
 			soloEntity.setState(1);//状态：待挑战
 			soloEntity.setResult("待挑战");//结果
+			soloEntity.setDraw(1);
 			soloEntity.setStatus(1);
 			soloEntity.setCreated(new Date());
 			int res = SoloDatabaseHandler.soloInsert(soloEntity);
 			//扣除金币
 			if (res == 1) {
 				VaultAPI.removeMoney(player.getName(),amount);
+				player.sendMessage("§a创建对局成功！输入：/tn solo list <页码>！");
 			}
 			return true;
 
-		}else if (argsList.size() >= 2){
+		}else if (argsList.size() >= 2 && argsList.get(1).equals("list")){
+			//查询对局
+			if (argsList.size() > 3) {
+				player.sendMessage(ChatColor.RED + "参数个数不正确：/tn solo list <页码>");
+				return true;
+			}
+			Integer count = SoloDatabaseHandler.selectSoloDataCount();
+			int j = count / 5;
+			int i = count % 5;
+			Integer countnum;
+			if (i == 0) {
+				countnum = j;
+			}else {
+				countnum = j + 1;
+			}
+			if (argsList.size() == 2) {
+				//查询第一页
+				List<SoloEntity> soloEntities = SoloDatabaseHandler.selectSoloData(0);
+				if (1 > countnum) {
+					player.sendMessage(ChatColor.RED + "没有更多的对局了");
+				}
+				player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §a§l§m §a§l§m §a§l§m §a§l§m §b§l§m §b§l§m §b§l§m §e【§a§l对局列表§e】 §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §e§l§m §e§l§m §e§l§m §e§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+				for (SoloEntity soloEntity : soloEntities) {
+					Integer id = soloEntity.getId();
+					String playerName = soloEntity.getPlayerName();
+					Double money = soloEntity.getMoney();
+					player.sendMessage("§6●§3对局编号:§a"+id+"  §3发起人:§a"+playerName+"  §3金额:§6"+money);
+				}
+				player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §a§l§m §a§l§m §a§l§m §a§l§m §b§l§m §b§l§m §b§l§m §a§l<页码>  "+1+"\\"+countnum+" §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §e§l§m §e§l§m §e§l§m §e§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+				return true;
+			}
+			if (argsList.size() == 3) {
+				//获取页数
+				String num = argsList.get(2);
+				Integer limit = 0;
+				try {
+					limit = Integer.valueOf(num);
+				}catch (Exception e){
+					player.sendMessage(ChatColor.RED + "查询的页数必须是整数");
+					return true;
+				}
+				if (limit > countnum) {
+					player.sendMessage(ChatColor.RED + "没有更多的对局了");
+					return true;
+				}
+				limit =(limit-1)*5;
+				List<SoloEntity> soloEntities = SoloDatabaseHandler.selectSoloData(limit);
+				player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §a§l§m §a§l§m §a§l§m §a§l§m §b§l§m §b§l§m §b§l§m §e【§a§l对局列表§e】 §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §e§l§m §e§l§m §e§l§m §e§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+				for (SoloEntity soloEntity : soloEntities) {
+					Integer id = soloEntity.getId();
+					String playerName = soloEntity.getPlayerName();
+					Double money = soloEntity.getMoney();
+					player.sendMessage("§6●§3对局编号:§a"+id+"  §3发起人:§a"+playerName+"  §3金额:§6"+money);
+				}
+				player.sendMessage("§c§l§m §c§l§m §c§l§m §c§l§m §6§l§m §6§l§m §6§l§m §6§l§m §e§l§m §e§l§m §e§l§m §e§l§m §a§l§m §a§l§m §a§l§m §a§l§m §b§l§m §b§l§m §b§l§m §a§l<页码>  "+num+"\\"+countnum+" §b§l§m §b§l§m §b§l§m §a§l§m §a§l§m §a§l§m §a§l§m §e§l§m §e§l§m §e§l§m §e§l§m §6§l§m §6§l§m §6§l§m §6§l§m §c§l§m §c§l§m §c§l§m §c§l§m");
+				return true;
+			}
+		}else{
 			//挑战对局
 			if (argsList.size() != 3) {
 				player.sendMessage(ChatColor.RED + "参数个数不正确：/tn solo <对局编号> <老虎|棒子|鸡>");
 				return true;
 			}
 			String id = argsList.get(1);
-			Integer integer = null;
+			Integer solonum = null;
 			try {
-				integer = Integer.valueOf(id);
+				solonum = Integer.valueOf(id);
 			}catch (Exception e){
 				player.sendMessage(ChatColor.RED + "挑战的对局编号必须是整数");
 				return true;
@@ -217,16 +275,71 @@ public class BetCommand implements CommandExecutor {
 				return true;
 			}
 			//查询挑战编号是否存在
+			SoloEntity soloEntity = SoloDatabaseHandler.selectSoloDataNum(solonum);
+			if (soloEntity.getId() == null) {
+				player.sendMessage(ChatColor.RED + "对局编号不存在或已经被挑战，请重新输入");
+				return true;
+			}else {
+				//判断金额是否足够发起挑战
+				double money = VaultAPI.getMoney(player.getName());
+				Double amount = soloEntity.getMoney();
+				if (money < amount) {
+					player.sendMessage(ChatColor.RED + "你没有足够的金币！");
+					return true;
+				}
+				String soloType  = soloEntity.getType();
+				if (soloType.equals(type)) {
+					//和局，修改对局信息
+					drawn(player,solonum);
+				}else if (soloType.equals("老虎") && type.equals("鸡")) {
+					//挑战者输
+					lose(player, soloEntity, amount, solonum);
+				}else if (soloType.equals("老虎") && type.equals("棒子")) {
+					//挑战者赢
+					win(player, amount,solonum);
+				}else if (soloType.equals("棒子") && type.equals("鸡")) {
+					//挑战者赢
+					win(player, amount,solonum);
+				}else if (soloType.equals("棒子") && type.equals("老虎")) {
+					//挑战者输
+					lose(player, soloEntity, amount,solonum);
+				}else if (soloType.equals("鸡") && type.equals("老虎")) {
+					//挑战者输
+					lose(player, soloEntity, amount,solonum);
+				}else if (soloType.equals("鸡") && type.equals("棒子")) {
+					//挑战者赢
+					win(player, amount,solonum);
+				}
 
-			//判断金额是否足够发起挑战
-			//挑战结果通知
-			//发放奖励
-			//修改并保存对局数据
-
+			}
 		}
 		return true;
 	}
+    private void win (Player player,Double amount,Integer solonum) {
+		//增加发起者金币
+		VaultAPI.giveMoney(player.getName(),amount);
+		player.sendMessage("§a恭喜您赢得对局的胜利，获得§6"+amount+"金");
+		//修改发起者的对局状态为输
+		SoloDatabaseHandler.updateSoloDataNum(solonum,"输");
+	}
 
+	private void lose (Player player,SoloEntity soloEntity,Double amount, Integer solonum) {
+		//扣除挑战者金币
+		VaultAPI.removeMoney(player.getName(),amount);
+		player.sendMessage("§b很遗憾，您没有干过对手，本局输掉§6"+amount+"金");
+		//修改发起者的对局状态为赢
+		SoloDatabaseHandler.updateSoloDataNum(solonum,"赢");
+		//发送邮件通知
+		//TODO
+	}
+
+	private void drawn (Player player, Integer solonum) {
+		player.sendMessage("§a本次挑战为和局，您可以继续挑战其他对局");
+		//修改发起者的对局状态为和局
+		SoloDatabaseHandler.updateSoloDataNum(solonum,"和");
+		//发送邮件通知
+		//TODO
+	}
 	/**
 	 * 查询开奖时间（猜猜看和电卷夺宝）
 	 * @param player

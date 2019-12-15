@@ -27,6 +27,5 @@
     <orderEntry type="library" name="Maven: io.puharesource.mc:TitleManager:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.13" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
-    <orderEntry type="library" name="Maven: mysql:SQLibrary:7.1.0" level="project" />
   </component>
 </module>

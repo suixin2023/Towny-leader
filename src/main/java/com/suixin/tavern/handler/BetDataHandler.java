@@ -35,7 +35,6 @@ public class BetDataHandler {
             try {
                 file.createNewFile();
             } catch (final Exception e) {
-                e.printStackTrace();
             }
         }
         final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -70,11 +69,7 @@ public class BetDataHandler {
 
     //读取数据库配置数据
     public FileConfiguration LoadDbData( ) {
-        final File file = new File((new StringBuilder())
-                .append(this.tavern.getDataFolder())
-                .append(File.separator)
-                .append("db.yml")
-                .toString());
+        final File file = new File(this.tavern.getDataFolder(), "db.yml");
         final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         return config;
     }

@@ -97,10 +97,10 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.13</version>
 		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>SQLibrary</artifactId>
-			<version>7.1.0</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>mysql</groupId>-->
+			<!--<artifactId>SQLibrary</artifactId>-->
+			<!--<version>7.1.0</version>-->
+		<!--</dependency>-->
 	</dependencies>
 </project>
