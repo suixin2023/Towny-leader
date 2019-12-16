@@ -153,8 +153,7 @@ public class SoloDatabaseHandler {
             JdbcUtil db = new JdbcUtil();
             db.openConnection(tavern.getBetDataHandler());
             ResultSet rst = db.execQuery(sql);
-            if (rst!=null) {
-                rst.next();
+            if (rst!=null && rst.next()) {
                 soloEntity.setId(rst.getInt("id"));
                 soloEntity.setType(rst.getString("type"));
                 soloEntity.setPlayerName(rst.getString("player_name"));
@@ -190,7 +189,7 @@ public class SoloDatabaseHandler {
 
     //查询总页数
     public static Integer selectSoloDataCount(){
-        String sql = "select count(*) as datacount from solo";
+        String sql = "select count(*) as datacount from solo where state = 1";
         Integer datacount=0;
         try {
             JdbcUtil db = new JdbcUtil();
@@ -220,15 +219,8 @@ public class SoloDatabaseHandler {
 //        soloEntity.setStatus(1);
 //        soloEntity.setCreated(new Date());
 //        soloInsert(soloEntity);
-        int j = 8 % 5;
-        int i = 8 / 5;
-        Integer countnum = 0;
-        if (i == 0) {
-            countnum = j;
-        }else {
-            countnum = j + 1;
-        }
-        System.out.println(countnum);
+        int i = 1 % 5;
+        System.out.println(i);
     }
 
 }

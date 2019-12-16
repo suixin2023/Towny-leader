@@ -213,6 +213,9 @@ public class BetCommand implements CommandExecutor {
 			}else {
 				countnum = j + 1;
 			}
+			if (count < 5) {
+				countnum = 1;
+			}
 			if (argsList.size() == 2) {
 				//查询第一页
 				List<SoloEntity> soloEntities = SoloDatabaseHandler.selectSoloData(0);
