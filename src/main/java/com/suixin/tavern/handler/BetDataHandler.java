@@ -19,6 +19,7 @@ public class BetDataHandler {
         this.tavern = tavern;
         this.historyLotteryResults = new HistoryLotteryResults();
         this.SaveDbConfig();
+        this.initializationYmal();
     }
     //保存本期开奖信息
     public void SaveCckBetDate(HistoryLotteryResults historyLotteryResults) {
@@ -47,6 +48,17 @@ public class BetDataHandler {
             e.printStackTrace();
         }
     }
+    //初始化配置文件
+    public void initializationYmal() {
+        HistoryLotteryResults historyLotteryResults = new HistoryLotteryResults();
+        historyLotteryResults.setPeriods("0");
+        historyLotteryResults.setGameType("猜猜看");
+        historyLotteryResults.setResult("无");
+        SaveCckBetDate(historyLotteryResults);
+        historyLotteryResults.setGameType("点卷夺宝");
+        SaveCckBetDate(historyLotteryResults);
+
+    }
 
     //读取开奖数据
     public void LoadCckBetData(HistoryLotteryResults historyLotteryResults) {
@@ -59,9 +71,6 @@ public class BetDataHandler {
                 .append(".yml")
                 .toString());
         final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        if (config == null) {
-            return;
-        }
         this.historyLotteryResults.setGameType(config.getString("玩法类型"));
         this.historyLotteryResults.setPeriods(config.getString("开奖期数"));
         this.historyLotteryResults.setResult(config.getString("开奖结果"));
