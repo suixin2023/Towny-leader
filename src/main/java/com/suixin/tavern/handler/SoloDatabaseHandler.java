@@ -119,7 +119,7 @@ public class SoloDatabaseHandler {
 
     //查询对局数据
     public static List<SoloEntity> selectSoloData(Integer limit){
-        String sql = "select * from solo where state = 1 limit "+limit+",5";
+        String sql = "select * from solo where state = 1 ORDER BY id desc limit "+limit+",5";
         List<SoloEntity> list = new ArrayList<>();
         try {
             JdbcUtil db = new JdbcUtil();
