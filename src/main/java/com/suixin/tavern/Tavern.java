@@ -51,7 +51,6 @@ public class Tavern extends JavaPlugin {
 		getCommand("ladder").setExecutor(this.ladder);
 		getCommand("cash").setExecutor(this.cash);
 		getCommand("tn").setExecutor(this.betCommand);
-		timeTask ();//启动CCK任务
 		api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
 		getLogger().info("==================[Tavern]==================");
 		if (api != null) {
@@ -72,6 +71,8 @@ public class Tavern extends JavaPlugin {
 			getLogger().info("Mysql连接失败!请联系开发人员解决：QQ:2469012478");
 		}
 		getLogger().info("==================[Tavern]==================");
+		timeTask ();//启动CCK任务
+		timeTask2 ();//启动DB任务
 	}
 
 
@@ -81,6 +82,60 @@ public class Tavern extends JavaPlugin {
 			public void run() {
 				//刷新开奖时间
 				timeMillis = System.currentTimeMillis() + 300000l;
+				//开奖
+				int res = (int)(Math.random() * 6) + 1;
+				int res2 = (int)(Math.random() * 6) + 1;
+				int res3 = (int)(Math.random() * 6) + 1;
+				HistoryLotteryResults historyLotteryResults = new HistoryLotteryResults();
+				historyLotteryResults.setGameType("猜猜看");
+				//查询上期猜猜看开奖记录
+				betDataHandler.LoadCckBetData(historyLotteryResults);
+				HistoryLotteryResults lotteryResults = betDataHandler.getHistoryLotteryResults();
+				String periods1 = lotteryResults.getPeriods();
+				Integer periods = 0;
+				if (periods1 != null) {
+					periods = Integer.valueOf(periods1);
+				}
+				historyLotteryResults.setPeriods(periods+1+"");
+				if (res == res2 && res2 == res3) {
+					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"豹子");
+					Boolean lottery = lottery(historyLotteryResults);
+					//覆盖最近开奖记录
+					betDataHandler.SaveCckBetDate(historyLotteryResults);
+					return;
+				}
+
+				if ((res + res2 + res3) <= 10) {
+					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"小");
+				}else{
+					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"大");
+				}
+
+				if ((res + res2 + res3) % 2 == 0) {
+					String result = historyLotteryResults.getResult();
+					historyLotteryResults.setResult(result + ","+"双");
+				}else {
+					String result = historyLotteryResults.getResult();
+					historyLotteryResults.setResult(result + ","+"单");
+				}
+				Boolean lottery = lottery(historyLotteryResults);
+				if (lottery) {
+					//覆盖最近开奖记录
+					betDataHandler.SaveCckBetDate(historyLotteryResults);
+				}
+				return;
+			}
+
+		}.runTaskTimer(this, 0L, 5*60*20L);
+		// 插件主类  延时  定时
+	}
+
+	public void timeTask2 () {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				//刷新开奖时间
+				timeMillis = System.currentTimeMillis() + 600000l;
 				//开奖
 				int res = (int)(Math.random() * 6) + 1;
 				int res2 = (int)(Math.random() * 6) + 1;

@@ -46,7 +46,7 @@ public class SoloDatabaseHandler {
 
         } catch (Exception e) {
             if (doCreate) {
-                //创建表
+                //写入异常的時候创建表
                 SoloDatabaseHandler.createTable();
                 doCreate = false;
                 soloInsert(soloEntity);//重新写入
