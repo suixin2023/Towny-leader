@@ -219,8 +219,9 @@ public class SoloDatabaseHandler {
 //        soloEntity.setStatus(1);
 //        soloEntity.setCreated(new Date());
 //        soloInsert(soloEntity);
-        int i = 1 % 5;
-        System.out.println(i);
+        String str = "15.0";
+        String substring = str.substring(0, str.indexOf("."));
+        System.out.println(substring);
     }
 
 }

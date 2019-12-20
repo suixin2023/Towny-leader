@@ -10,6 +10,7 @@ import com.suixin.tavern.handler.Ranks;
 import com.suixin.tavern.util.JdbcUtil;
 import com.suixin.tavern.util.VaultAPI;
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI;
+import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -63,8 +64,9 @@ public class Tavern extends JavaPlugin {
 		}else{
 			getLogger().info("TitleManager连接成功");
 		}
-		playerPointsAPI = (PlayerPointsAPI) Bukkit.getServer().getPluginManager().getPlugin("PlayerPoints");
-		if (playerPointsAPI == null) {
+        PlayerPoints playerPoints = (PlayerPoints) Bukkit.getServer().getPluginManager().getPlugin("PlayerPoints");
+        playerPointsAPI = playerPoints.getAPI();
+        if (playerPointsAPI == null) {
 			getLogger().info("PlayerPoints连接失败!插件将无法正常工作");
 		}else{
 			getLogger().info("PlayerPointsr连接成功");
@@ -161,7 +163,7 @@ public class Tavern extends JavaPlugin {
 				}
 				historyLotteryResults.setPeriods(periods+1+"");
 				if (res == res2 && res2 == res3) {
-					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"龙");
+					historyLotteryResults.setResult("龙");
 					lottery2(historyLotteryResults);
 					//覆盖最近开奖记录
 					betDataHandler.SaveCckBetDate(historyLotteryResults);
@@ -169,9 +171,9 @@ public class Tavern extends JavaPlugin {
 				}
 
 				if ((res + res2 + res3) <= 10) {
-					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"小");
+					historyLotteryResults.setResult("小");
 				}else{
-					historyLotteryResults.setResult(res+"、"+res2+"、"+res3+" "+"大");
+					historyLotteryResults.setResult("大");
 				}
 
 				lottery2(historyLotteryResults);
@@ -223,7 +225,7 @@ public class Tavern extends JavaPlugin {
 		}
 		//取前三
 		List<PlayerBetDate> list = new ArrayList<>();
-		if (winnerCck.size() > 0 && winnerCck.size() > 3) {
+		if (winnerCck.size() > 3) {
 			list.add(winnerCck.get(0));
 			list.add(winnerCck.get(1));
 			list.add(winnerCck.get(2));
@@ -274,9 +276,9 @@ public class Tavern extends JavaPlugin {
 			Double betAmountRes = 0.00;
 			String betType = playerBetDate.getBetType();
 			if (!betType.equals("龙") && (historyLotteryResults.getResult()).contains(betType)) {
-				betAmountRes = betAmount + (betAmount * 0.95);
+				betAmountRes = betAmount + (betAmount * 1.0);
 			}else if (betType.equals("龙") && (historyLotteryResults.getResult()).contains(betType)){
-				betAmountRes = betAmount + (betAmount * 9.5);
+				betAmountRes = betAmount + (betAmount * 10.0);
 			}
 			//发放奖励
 			String playerName = playerBetDate.getPlayerName();
@@ -284,7 +286,8 @@ public class Tavern extends JavaPlugin {
 			UUID uniqueId = player.getUniqueId();
 			if (betAmountRes > 0.00) {
 				winnerDb.add(playerBetDate);
-				playerPointsAPI.give(uniqueId,Integer.valueOf(betAmountRes.toString()));
+                String str = betAmountRes.toString();
+				playerPointsAPI.give(uniqueId,Integer.valueOf(str.substring(0,str.indexOf("."))));
 				player.sendMessage("§a恭喜您押注的"+"§6["+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"点卷"+"§6]"+"§a在本期【点卷夺宝】中获得："+betAmountRes+"点卷");
 			}else {
 				player.sendMessage("§b很遗憾...您押注的"+"§6["+playerBetDate.getBetType()+playerBetDate.getBetAmount()+"点卷"+"§6]"+"§b在本期【点卷夺宝】中没有中奖");
@@ -302,7 +305,7 @@ public class Tavern extends JavaPlugin {
 		}
 		//取前三
 		List<PlayerBetDate> list = new ArrayList<>();
-		if (winnerDb.size() > 0 && winnerDb.size() > 3) {
+		if (winnerDb.size() > 3) {
 			list.add(winnerDb.get(0));
 			list.add(winnerDb.get(1));
 			list.add(winnerDb.get(2));
