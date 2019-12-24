@@ -162,7 +162,7 @@ public class Tavern extends JavaPlugin {
 				return;
 			}
 
-		}.runTaskTimer(this, 0L, 1*60*20L);
+		}.runTaskTimer(this, 0L, 10*60*20L);
 		// 插件主类  延时  定时
 	}
 
