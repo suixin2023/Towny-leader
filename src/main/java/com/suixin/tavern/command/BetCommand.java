@@ -350,42 +350,44 @@ public class BetCommand implements CommandExecutor {
 				String soloType  = soloEntity.getType();
 				if (soloType.equals(type)) {
 					//和局，修改对局信息
-					drawn(player,solonum);
+					drawn(player,solonum,type);
 				}else if (soloType.equals("老虎") && type.equals("鸡")) {
 					//挑战者输
-					lose(player, soloEntity, amount, solonum);
+					lose(player, soloEntity, amount, solonum, type);
 				}else if (soloType.equals("老虎") && type.equals("棒子")) {
 					//挑战者赢
-					win(player, amount,solonum);
+					win(player, soloEntity, amount,solonum, type);
 				}else if (soloType.equals("棒子") && type.equals("鸡")) {
 					//挑战者赢
-					win(player, amount,solonum);
+					win(player, soloEntity, amount,solonum,type);
 				}else if (soloType.equals("棒子") && type.equals("老虎")) {
 					//挑战者输
-					lose(player, soloEntity, amount,solonum);
+					lose(player, soloEntity, amount,solonum,type);
 				}else if (soloType.equals("鸡") && type.equals("老虎")) {
 					//挑战者输
-					lose(player, soloEntity, amount,solonum);
+					lose(player, soloEntity, amount,solonum,type);
 				}else if (soloType.equals("鸡") && type.equals("棒子")) {
 					//挑战者赢
-					win(player, amount,solonum);
+					win(player, soloEntity, amount,solonum,type);
 				}
 
 			}
 		}
 		return true;
 	}
-    private void win (Player player,Double amount,Integer solonum) {
+    private void win (Player player,SoloEntity soloEntity,Double amount,Integer solonum, String type) {
 		//增加发起者金币
 		VaultAPI.giveMoney(player.getName(),amount);
+		player.sendMessage("§a您：§6"+soloEntity.getType()+" §c§lVS "+"§a对手：§6"+type);
 		player.sendMessage("§a恭喜您赢得对局的胜利，获得§6"+amount+"金");
 		//修改发起者的对局状态为输
 		SoloDatabaseHandler.updateSoloDataNum(solonum,"输");
 	}
 
-	private void lose (Player player,SoloEntity soloEntity,Double amount, Integer solonum) {
+	private void lose (Player player,SoloEntity soloEntity,Double amount, Integer solonum, String type) {
 		//扣除挑战者金币
 		VaultAPI.removeMoney(player.getName(),amount);
+		player.sendMessage("§a您：§6"+soloEntity.getType()+" §c§lVS "+"§a对手：§6"+type);
 		player.sendMessage("§b很遗憾，您没有干过对手，本局输掉§6"+amount+"金");
 		//修改发起者的对局状态为赢
 		SoloDatabaseHandler.updateSoloDataNum(solonum,"赢");
@@ -393,7 +395,8 @@ public class BetCommand implements CommandExecutor {
 		//TODO
 	}
 
-	private void drawn (Player player, Integer solonum) {
+	private void drawn (Player player, Integer solonum, String type) {
+		player.sendMessage("§a您：§6"+type+" §c§lVS "+"§a对手：§6"+type);
 		player.sendMessage("§a本次挑战为和局，您可以继续挑战其他对局");
 		//修改发起者的对局状态为和局
 		SoloDatabaseHandler.updateSoloDataNum(solonum,"和");
