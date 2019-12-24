@@ -8,22 +8,9 @@ softdepend:
 - PlayerPoints
 - TitleManager
 commands:
-  rank:
-    description: 显示状态
-    usage: /rank
-  ladder:
-    description: 显示前五名玩家
-    usage: /ladder
-  cash:
-    description: 兑换物品
-    usage: /cash
   tn:
     description:
     usage: /tn
 permissions:
-  tavern.rank:
-    description: Allows you to see rank
-  tavern.ladder:
-    description: Allows you to see the ladder
-  tavern.fame:
-    description: Allow you to use fame
+  tavern.tn:
+    description: Allows you to use tn
