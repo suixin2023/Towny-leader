@@ -3,10 +3,7 @@ package com.suixin.tavern;
 import com.suixin.tavern.command.*;
 import com.suixin.tavern.entity.*;
 import com.suixin.tavern.handler.BetDataHandler;
-import com.suixin.tavern.handler.DatabaseHandler;
 import com.suixin.tavern.handler.SoloDatabaseHandler;
-import com.suixin.tavern.listener.HandlePlayerPrefix;
-import com.suixin.tavern.handler.Ranks;
 import com.suixin.tavern.util.JdbcUtil;
 import com.suixin.tavern.util.VaultAPI;
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI;
@@ -22,15 +19,8 @@ import java.util.logging.Logger;
 
 public class Tavern extends JavaPlugin {
 	public Logger log;
-	private RankCommand rankCommand;
 	private BetCommand betCommand;
-	private DatabaseHandler databaseHandler;
 	private BetDataHandler betDataHandler;
-	private SoloDatabaseHandler soloDatabaseHandler;
-	private Ranks ranks;
-	private HandlePlayerPrefix handlePlayerPrefix;
-	private LeaderBoardCommand ladder;
-	private CashCommand cash;
 	private Long timeCckMillis;//cck本期开奖日期
 	private Long timeDbMillis;//db本期开奖日期
 	private List<PlayerBetDate> winnerCck;//cck本期获奖名单
@@ -43,19 +33,9 @@ public class Tavern extends JavaPlugin {
 		this.log = getLogger();
 		this.winnerCck = new ArrayList<>();
 		this.winnerDb = new ArrayList<>();
-		this.databaseHandler = new DatabaseHandler(this);
 		this.betDataHandler = new BetDataHandler(this);
-		this.soloDatabaseHandler = new SoloDatabaseHandler(this);
-		this.ranks = new Ranks(this.databaseHandler, this);
-		this.rankCommand = new RankCommand(this.databaseHandler, this.ranks);
+		new SoloDatabaseHandler(this);
 		this.betCommand = new BetCommand(this.betDataHandler, this);
-		this.handlePlayerPrefix = new HandlePlayerPrefix(this.databaseHandler, this.ranks, this);
-		this.ladder = new LeaderBoardCommand(this);
-		this.cash = new CashCommand(databaseHandler);
-		getServer().getPluginManager().registerEvents(handlePlayerPrefix, this);
-		getCommand("rank").setExecutor(this.rankCommand);
-		getCommand("ladder").setExecutor(this.ladder);
-		getCommand("cash").setExecutor(this.cash);
 		getCommand("tn").setExecutor(this.betCommand);
 		api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
 		getLogger().info("==================[Tavern]==================");
