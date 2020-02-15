@@ -1,16 +1,12 @@
-name: Tavern
-main: com.suixin.tavern.Tavern
+name: TownyLeader
+main: com.suixin.tavern.TownyLeader
 version: ${project.version}
 authors:
 - suixin
-softdepend:
-- Vault
-- PlayerPoints
-- TitleManager
 commands:
   tn:
     description:
-    usage: /tn
+    usage: /townyleader
 permissions:
-  tavern.tn:
+  townyleader.tn:
     description: Allows you to use tn

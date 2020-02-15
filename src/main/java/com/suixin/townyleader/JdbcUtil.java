@@ -1,14 +1,8 @@
-package com.suixin.tavern.util;
+package com.suixin.townyleader;
 
-import com.suixin.tavern.handler.BetDataHandler;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class JdbcUtil {
     private Connection conn = null;
