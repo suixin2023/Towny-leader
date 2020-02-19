@@ -1,12 +1,12 @@
 name: TownyLeader
-main: com.suixin.tavern.TownyLeader
+main: com.suixin.townyleader.TownyLeader
 version: ${project.version}
 authors:
 - suixin
 commands:
-  tn:
+  townyleader:
     description:
     usage: /townyleader
 permissions:
   townyleader.tn:
-    description: Allows you to use tn
+    description: Allows you to use townyleader
