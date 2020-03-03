@@ -17,25 +17,34 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 	@Override
 	public void onEnable() {
 		this.log = getLogger();
-		getLogger().info("==================[TownyLeader]==================");
-		getLogger().info("已加载，请在配置文件中修改数据库信息后使用");
-		getLogger().info("==================[TownyLeader]==================");
 		this.betDataHandler = new BetDataHandler(this);
 		getCommand("townyleader").setExecutor(this);
+		getLogger().info("==================[TownyLeader]==================");
+		try {
+			boolean connection = new JdbcUtil().openConnection(this.betDataHandler);//加载数据库驱动
+			if (connection) {
+				getLogger().info("Mysql连接成功");
+			}else{
+				getLogger().info("Mysql连接失败!请在配置文件中修改数据库信息后使用");
+			}
+		}catch (Exception e){
+			getLogger().info("Mysql连接失败!请在配置文件中修改数据库信息后使用");
+		}
+		getLogger().info("==================[TownyLeader]==================");
 	}
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String arg, final String[] args) {
 		Player player = null;
-//		if (sender instanceof Player) {
-//			player = (Player) sender;
-//		}else {
-//			sender.sendMessage("错误，这是一个玩家指令!");
-//			return true;
-//		}
+		if (sender instanceof Player) {
+			player = (Player) sender;
+		}else {
+			sender.sendMessage("错误，这是一个玩家指令!");
+			return true;
+		}
 		if (cmd.getName().equalsIgnoreCase("townyleader")) {
-			sender.sendMessage("111111");
 			List<String> argsList = Arrays.asList(args);
 			if (argsList.size() != 4) {
+				player.sendMessage("§c请输入/townyleader set mayor 城镇名 玩家名");
 				return true;
 			}
 			String arg1 = argsList.get(0);
@@ -44,28 +53,29 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 			String arg4 = argsList.get(3);
 			if (arg1.equals("set") && arg2.equals("mayor")) {
 
-				sender.sendMessage("00000");
 				//设置玩家或者npc为城镇所有者
 				setLeader(sender,player,arg3, arg4);
 			}
 
 		}
-		sender.sendMessage("222222");
 		return true;
 	}
 
 	private void setLeader (CommandSender sender,Player player, String arg3, String arg4){
 		//判断玩家是否是国家领导人
-		sender.sendMessage("33333");
-//		Integer num = selectMayorBetDate(player.getName());
-		Integer num = selectMayorBetDate("'NPC51'");
-		sender.sendMessage(num+"090");
+		Integer num = selectMayorBetDate(player.getName());
 		//权限判断
 		if(num == 0){
 			player.sendMessage("§c无权限，你不是国家领导人");
+			return;
+		}
+		if(num == -1){
+			player.sendMessage("§c数据库连接失败，请检查配置文件");
+			return;
 		}
 		//查询玩家所在国家
 		MayorBetDate mayorBetDate = selectMayorBetDateByplayerName(player.getName());
+		player.sendMessage(mayorBetDate.getNation());
 		if (mayorBetDate == null) {
 			player.sendMessage("§c您还没有国家");
 			return;
@@ -91,9 +101,15 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 				list.add(allResident);
 			}
 		}
-
-		if (list.contains(arg4)){
+		int usernum = 0;
+		for (String s : list) {
+			if (s.equals(arg4)) {
+				usernum += 1;
+			}
+		}
+		if (usernum == 0){
 			player.sendMessage("§c输入的玩家不属于你所在的国家");
+			return;
 		}
 		//修改城镇所有者
 		updateMayor(arg4,arg3);
@@ -101,23 +117,27 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 
     //查询玩家是否是国家领导人
 	public Integer selectMayorBetDate(String name){
-//		String sql = "select count(*) as datacount from towny_towns tt" +
-//				"join towny_nations tn on tt.name = tn.capital" +
-//				" where tt.mayor = ?";
-		String sql = "select * from towny_towns where mayor = " ;
+		String sql = "select count(*) as datacount from towny_towns tt" +
+				" join towny_nations tn on tt.name = tn.capital" +
+				" where tt.mayor = " + name;
 		Integer datacount=0;
 		try {
 			JdbcUtil db = new JdbcUtil();
 			db.openConnection(this.getBetDataHandler());
 			ResultSet rst = db.execQuery(sql);
+			if (rst == null) {
+				return 0;
+			}
 			rst.next();
-			datacount = rst.getInt("datacount");
+			String str = rst.getString("datacount");
+			datacount = Integer.valueOf(str);
 			db.close(rst);
 			db.close();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return -1;
 		}
 		return datacount;
 	}
@@ -149,7 +169,7 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 
 	//查询输入的城镇名是否属于这个国家
 	public MayorBetDate selectMayorBetDateByName(String town){
-		String sql = "select tt.* from towny_towns where name = "+town;
+		String sql = "select * from towny_towns where name = "+"'"+town+"'";
 		MayorBetDate mayorBetDate = new MayorBetDate();
 		try {
 			JdbcUtil db = new JdbcUtil();
@@ -174,7 +194,7 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 
 	//查询城镇所有居民
 	public List<MayorBetDate> selectMayorBetDateByResident(String nation){
-		String sql = "select * from towny_towns where nation = "+nation;
+		String sql = "select * from towny_towns where nation = "+"'"+nation+"'";
 		List<MayorBetDate> mayorBetDates = new ArrayList<>();
 		try {
 			JdbcUtil db = new JdbcUtil();
@@ -203,7 +223,7 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 	//修改城镇所有者
 	public void updateMayor(String mayor,String name){
 		String sql;
-		sql = "update towny_towns set mayor = "+mayor+"where name = "+name;
+		sql = "update towny_towns set mayor = "+"'"+mayor+"'"+" where name = "+"'"+name+"'";
 		try {
 			JdbcUtil db = new JdbcUtil();
 			db.openConnection(this.getBetDataHandler());
