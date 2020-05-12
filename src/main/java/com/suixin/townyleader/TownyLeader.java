@@ -1,14 +1,19 @@
 package com.suixin.townyleader;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 import java.sql.*;
 import java.util.logging.Logger;
+
+import static org.bukkit.Bukkit.getServer;
 
 public class TownyLeader extends JavaPlugin implements CommandExecutor {
 	public Logger log;
@@ -112,14 +117,17 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 			return;
 		}
 		//修改城镇所有者
-		updateMayor(arg4,arg3);
+		Server server = getServer();
+		ConsoleCommandSender consoleSender = server.getConsoleSender();
+		Bukkit.getServer().dispatchCommand(consoleSender,"townyadmin set mayor "+arg3+" "+arg4);
+//		updateMayor(arg4,arg3);
 	}
 
     //查询玩家是否是国家领导人
 	public Integer selectMayorBetDate(String name){
 		String sql = "select count(*) as datacount from towny_towns tt" +
 				" join towny_nations tn on tt.name = tn.capital" +
-				" where tt.mayor = " + name;
+				" where tt.mayor = " + "'"+name+"'";
 		Integer datacount=0;
 		try {
 			JdbcUtil db = new JdbcUtil();
