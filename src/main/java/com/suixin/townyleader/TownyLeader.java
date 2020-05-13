@@ -80,9 +80,14 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 		}
 		//查询玩家所在国家
 		MayorBetDate mayorBetDate = selectMayorBetDateByplayerName(player.getName());
-		player.sendMessage(mayorBetDate.getNation());
+		MayorBetDate arg4mayorBetDate = new MayorBetDate();
+		arg4mayorBetDate = selectMayorBetDateByplayerName(arg4);
 		if (mayorBetDate == null) {
 			player.sendMessage("§c您还没有国家");
+			return;
+		}
+		if (arg4mayorBetDate.getTownyName() != null) {
+			player.sendMessage("§c玩家必须退出原城镇");
 			return;
 		}
 		//判断输入的城镇名是否属于这个国家
@@ -95,7 +100,7 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 			player.sendMessage("§c您输入的城镇不属于这个国家");
 			return;
 		}
-
+/*
 		//查询国家所有居民
 		List<String> list = new ArrayList<>();
 		List<MayorBetDate> mayorBetDates = selectMayorBetDateByResident(mayorBetDate.getNation());
@@ -112,10 +117,7 @@ public class TownyLeader extends JavaPlugin implements CommandExecutor {
 				usernum += 1;
 			}
 		}
-		if (usernum == 0){
-			player.sendMessage("§c输入的玩家不属于你所在的国家");
-			return;
-		}
+		*/
 		//修改城镇所有者
 		Server server = getServer();
 		ConsoleCommandSender consoleSender = server.getConsoleSender();

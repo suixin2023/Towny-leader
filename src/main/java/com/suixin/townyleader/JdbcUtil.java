@@ -215,9 +215,4 @@ public void callStordProc(String sql, Object[] inParams, SqlParameter[] outParam
     public Connection getConn() {
         return conn;
     }
-
-
-    public static void main(String[] args) {
-
-    }
 }
